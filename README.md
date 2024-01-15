@@ -1,0 +1,3 @@
+This is a small Message Server and Client Application with Qt
+
+More documentation will follow...
