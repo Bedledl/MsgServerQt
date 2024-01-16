@@ -1,3 +1,5 @@
+#ifndef COMMUNICATORS_H
+#define COMMUNICATORS_H
 #include <QString>
 
 /// @brief Bridge between Client thread and the internal Logic, but can also be used for debugging
@@ -17,3 +19,5 @@ class PingPongCommunicator {
         return "Don't you want to play Ping-Pong?";
     }
 };
+
+#endif
