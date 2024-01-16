@@ -1,6 +1,6 @@
 #include <string>
 #include <set>
-#include <mutex>
+#include <QReadWriteLock>
 #include <functional>
 
 #include "message.h"
@@ -11,7 +11,7 @@ typedef unsigned chat_key;
 class Chat {
     chat_key key;
     std::set<Message> messages = {};
-    std::mutex mutex;
+    QReadWriteLock lock;
     public:
     void foreach_do(std::function<void(const Message&)> func);
     void add_message(Message msg);
