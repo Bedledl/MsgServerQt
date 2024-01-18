@@ -3,7 +3,6 @@
 
 #include <QWidget>
 
-#include "chatParticipantsOrganizer.h"
 #include "server.h"
 
 //#include "serverApp.moc"
