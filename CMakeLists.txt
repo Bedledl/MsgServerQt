@@ -25,6 +25,7 @@ add_executable(LaunchServer mainServer.cpp)
 #add_executable(LunchClient mainClient.cpp)
 
 add_subdirectory(communication)
+add_subdirectory(connConfigurator)
 
 add_subdirectory(server)
 #add_subdirectory(client)
