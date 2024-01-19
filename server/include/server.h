@@ -1,16 +1,10 @@
 #ifndef SERVER_H
 #define SERVER_H
-#include <QObject>
+#include "clientThreadWorker.h"
 #include <exception>
 
-//https://doc.qt.io/qt-6/qtnetwork-threadedfortuneserver-example.html
+// https://doc.qt.io/qt-6/qtnetwork-threadedfortuneserver-example.html
 
-class Server : public QObject {
-    public:
-        Server(QObject *parent = nullptr) : QObject(parent) {};
-        virtual ~Server();
-    protected:
-        void create_new_client_thread(qintptr socketDescriptor);
 class ServerFailedToStart : public std::exception
 {
     virtual const char *what() const throw()
@@ -19,8 +13,13 @@ class ServerFailedToStart : public std::exception
     }
 };
 
-    public:
-    protected:
+class Server
+{
+public:
+    virtual ~Server(){};
+
+protected:
+    void create_new_client_thread(Worker *worker);
 };
 
 #endif
