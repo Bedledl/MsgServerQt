@@ -27,6 +27,8 @@ public:
     ConnConfiguratorGraphic(QWidget *parent = nullptr);
     ~ConnConfiguratorGraphic();
     std::expected<std::pair<QString, quint16>, std::exception> retrieveConnectionConfiguration() override;
+public slots:
+    void displayError(std::exception &exc);
 };
 
 #endif

@@ -2,6 +2,7 @@
 #include <QComboBox>
 #include <QDialog>
 #include <QLineEdit>
+#include <QMessageBox>
 #include <QNetworkInterface>
 #include <QPointer>
 #include <QPushButton>
@@ -76,4 +77,9 @@ std::expected<std::pair<QString, quint16>, std::exception> ConnConfiguratorGraph
 void ConnConfiguratorGraphic::tryEnableConnectButton()
 {
     connectButton->setEnabled(!addrBox->currentText().isEmpty() && !portLineEdit->text().isEmpty());
+}
+
+void ConnConfiguratorGraphic::displayError(std::exception &exc)
+{
+    QMessageBox::information(this, tr("Error"), tr(exc.what()));
 }
