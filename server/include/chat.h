@@ -1,29 +1,24 @@
-#ifndef CHAT_H
-#define CHAT_H
+#ifndef SERVER_CHAT_H
+#define SERVER_CHAT_H
 
-#include <QReadWriteLock>
-#include <functional>
-#include <set>
-
-#include "clientOrganizer.h"
+#include "../common/include/chat.h"
 #include "message.h"
 #include "uniqueKey.h"
+#include <QReadWriteLock>
 
-class Chat
+class ServerChat : public Chat
 {
-    const UniqueKey<Chat> key;
-    std::set<Message> messages = {};
+    const UniqueKey<ServerChat> key;
     QReadWriteLock lock;
 
 public:
-    Chat(){};
     void foreach_do(std::function<void(const Message &)> func);
     void add_message(Message msg);
-    const UniqueKey<Chat> &get_key() const { return key; };
+    const UniqueKey<ServerChat> &get_key() const { return key; };
 };
 
 /// @brief Global Chat as Singleton, because we want to have exactly one instance available over the lifetime of the server.
-class GlobalChat : public Chat
+class GlobalChat : public ServerChat
 {
 public:
     static GlobalChat &get_instance()

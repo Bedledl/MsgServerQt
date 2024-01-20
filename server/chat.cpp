@@ -1,14 +1,16 @@
 #include "include/chat.h"
+#include <functional>
 
-void Chat::add_message(Message msg) {
+void ServerChat::add_message(Message msg)
+{
     lock.lockForWrite();
-    messages.emplace(msg);
+    Chat::add_message(std::move(msg));
     lock.unlock();
 }
 
-
-void Chat::foreach_do(std::function<void( const Message&)> func) {
+void ServerChat::foreach_do(std::function<void(const Message &)> func)
+{
     lock.lockForRead();
-    std::for_each(messages.begin(), messages.end(), func);
+    Chat::foreach_do(std::move(func));
     lock.unlock();
 }
