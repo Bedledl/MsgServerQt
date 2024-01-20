@@ -26,4 +26,22 @@ public:
         }
         return date <=> msg.date;
     };
+    QString toString() const
+    {
+        std::time_t date_c = std::chrono::system_clock::to_time_t(date);
+        std::tm date_tm = *std::localtime(&date_c);
+
+        char buff[10];
+        QString date_str;
+        if (!strftime(buff, sizeof buff, "%d:%m:%y", &date_tm))
+        {
+            date_str = QString("Unknown date");
+        }
+        else
+        {
+            date_str = QString(buff);
+        }
+
+        return date_str + QString(": ") + content;
+    }
 };
