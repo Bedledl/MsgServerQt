@@ -1,6 +1,7 @@
 #ifndef WORKER_H
 #define WORKER_H
 
+#include <QDataStream>
 #include <QTcpSocket>
 #include <QThread>
 
@@ -34,7 +35,11 @@ public slots:
 
 private:
     qintptr socketDescriptor;
+    QTcpSocket *tcpSocket;
     QString name;
     std::unique_ptr<Communicator> communicator;
+    QDataStream in;
+    QByteArray block;
+    QDataStream out{&block, QIODevice::WriteOnly};
 };
 #endif

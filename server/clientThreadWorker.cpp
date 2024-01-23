@@ -1,35 +1,50 @@
 #include "clientThreadWorker.h"
 #include "communicators.h"
-#include <iostream>
 #include "moc_clientThreadWorker.cpp"
+#include <iostream>
+
+#include <unistd.h>
 
 TCPServerWorker::TCPServerWorker(qintptr socketDescriptor, QObject *parent)
-: Worker(parent), socketDescriptor(socketDescriptor) {
-    std::cout << "Client Thread Worker Init" << std::endl;
+    : Worker(parent), socketDescriptor(socketDescriptor)
+{
+    tcpSocket = new QTcpSocket(this);
+    in.setVersion(QDataStream::Qt_6_6);
+    out.setVersion(QDataStream::Qt_6_6);
+    connect(tcpSocket, &QTcpSocket::readyRead, this, &TCPServerWorker::readFromSocketAndAswer);
 }
 
-void TCPServerWorker::process() {
+void TCPServerWorker::process()
+{
     communicator = std::make_unique<PingPongCommunicator>();
 
-    QTcpSocket tcpSocket;
-    if (!tcpSocket.setSocketDescriptor(socketDescriptor)) {
-        emit error(tcpSocket.error());
+    if (!tcpSocket->setSocketDescriptor(socketDescriptor))
+    {
+        std::cout << "SetSocketDescriptor error" << std::endl;
+        emit error(tcpSocket->error());
         return;
     }
-    QByteArray block;
-    QDataStream out(&block, QIODevice::WriteOnly);
-    out.setVersion(QDataStream::Qt_6_5);
-    out << "Ping";
+    in.setDevice(tcpSocket);
 
-    tcpSocket.write("Ping");
-    char buffer[64];
-    auto len = tcpSocket.readLine(buffer, 64);
+    out << communicator->welcomeMessage();
+    tcpSocket->write(block);
 
-    out.setVersion(QDataStream::Qt_6_5);
-    out << communicator->answerMessage(QString(buffer)); // may access unitilialized memory because of maybe missing \0
-    tcpSocket.write("Ping");
-//    tcpSocket.disconnectFromHost();
-//    tcpSocket.waitForDisconnected();
+    // sleep(20); why does this sleep client too?
+}
 
-    emit finished();
+void TCPServerWorker::readFromSocketAndAswer()
+{
+    in.startTransaction();
+    if (!in.commitTransaction())
+    {
+        std::cout << "Error QDataStream Status: " << in.status() << std::endl;
+        return;
+    }
+    QString msg;
+    in >> msg;
+
+    auto answer = communicator->answerMessage(msg);
+
+    out << answer;
+    tcpSocket->write(block);
 }
