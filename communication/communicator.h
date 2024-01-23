@@ -8,6 +8,9 @@ class Communicator
 {
 public:
     virtual QString answerMessage(QString msg) = 0;
+    /// @brief Message that is sent from the Server to start communication after succesfully connecting to client.
+    /// @return
+    virtual QString welcomeMessage() = 0;
 };
 
 class PingPongCommunicator : public Communicator
@@ -24,6 +27,11 @@ public:
             return "Ping";
         }
         return "Don't you want to play Ping-Pong?";
+    }
+
+    QString welcomeMessage() override
+    {
+        return QString("Ping");
     }
 };
 
