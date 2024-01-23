@@ -1,6 +1,9 @@
-#include <string>
+#ifndef MESSAGE_H
+#define MESSAGE_H
+
 #include <chrono>
 #include <compare>
+#include <string>
 
 class Message
 {
@@ -45,3 +48,5 @@ public:
         return date_str + QString(": ") + content;
     }
 };
+
+#endif
