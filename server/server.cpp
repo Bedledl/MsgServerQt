@@ -1,10 +1,14 @@
 #include "server.h"
-#include "clientThread.h"
+#include "clientThreadWorker.h"
 
-#include <QObject>
+void Server::create_new_client_thread(Worker *worker)
+{
+    QThread *thread = new QThread();
+    worker->moveToThread(thread);
 
-void Server::create_new_client_thread(qintptr socketDescriptor) {
-    ClientThread *thread = new ClientThread(socketDescriptor, this);
-    QObject::connect(thread, &ClientThread::finished, thread, &ClientThread::deleteLater);
+    thread->connect(thread, &QThread::started, worker, &Worker::process);
+    thread->connect(thread, &QThread::finished, worker, &Worker::deleteLater);
+    thread->connect(worker, &Worker::finished, thread, &QThread::quit);
+
     thread->start();
 }
