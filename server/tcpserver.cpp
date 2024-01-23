@@ -1,45 +1,29 @@
 #include "tcpserver.h"
 
-#include <iostream>
 #include <QNetworkInterface>
+#include <iostream>
 
-TCPMessageServer::TCPMessageServer(QObject *parent) : QTcpServer(parent), Server(parent) {
+#include "clientThreadWorker.h"
+#include "moc_tcpserver.cpp"
+
+#include <iostream>
+
+TCPMessageServer::TCPMessageServer(QHostAddress ip, quint16 port, QObject *parent) : QTcpServer(parent)
+{
 
     // copied from https://code.qt.io/cgit/qt/qtbase.git/tree/examples/network/fortuneserver/server.cpp?h=6.6
-    if (!listen()) {
+    if (!listen(ip, port))
+    {
         std::cout << "Unable to start the server" << std::endl;
-        // QMessageBox::critical(this, tr("Messager"),
-        //                       tr: %1.")
-        //                       .arg(errorString()));
         close();
-        return;
+        throw ServerFailedToStart();
     }
 
-    QString ipAddress;
-    const QList<QHostAddress> ipAddressesList = QNetworkInterface::allAddresses();
-    // use the first non-localhost IPv4 address
-    for (const QHostAddress &entry : ipAddressesList) {
-        if (entry != QHostAddress::LocalHost && entry.toIPv4Address()) {
-            ipAddress = entry.toString();
-            break;
-        }
-    }
-    // if we did not find one, use IPv4 localhost
-    if (ipAddress.isEmpty())
-        ipAddress = QHostAddress(QHostAddress::LocalHost).toString();
-    // statusLabel->setText(tr("The server is running on\n\nIP: %1\nport: %2\n\n"
-    //                         "Run the Fortune Client example now.")
-    //                      .arg(ipAddress).arg(serverPort()));
-    std::cout << "The server is running on\n\nIP: %1\nport: %2\n\n"
-                             "Run the Fortune Client example now."<< std::endl;// << ipAddress << serverPort();
-
+    qDebug() << "Server is running on IP: " << serverAddress().toString() << " and port: " << port;
 }
 
-void TCPMessageServer::incomingConnection(qintptr socketDescriptor) {
-    create_new_client_thread(socketDescriptor);
+void TCPMessageServer::incomingConnection(qintptr socketDescriptor)
+{
+    std::cout << "incoming Connection" << std::endl;
+    create_new_client_thread(new TCPServerWorker(socketDescriptor, this->QTcpServer::parent()));
 }
-
-
-// bool TCPMessageServer::hasPendingConnections() const {
-//     return true;
-// }

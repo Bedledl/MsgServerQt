@@ -6,19 +6,15 @@
 
 #include "server.h"
 
-//https://doc.qt.io/qt-6/qtnetwork-threadedfortuneserver-example.html
-
-class TCPMessageServer : public QTcpServer, public Server {
+class TCPMessageServer : public QTcpServer, public Server
+{
     Q_OBJECT
-    public:
-        TCPMessageServer(QObject *parent = nullptr);
-        //Server(Server &other) = delete;
-        //Server(Server &&other) default;
-        ~TCPMessageServer() {};
-        //bool hasPendingConnections() const override;
-        //QTcpSocket *nextPendingConnection() override ;
-    protected:
-        void incomingConnection(qintptr socketDescriptor) override;
+public:
+    TCPMessageServer(QHostAddress ip, quint16 port, QObject *parent = nullptr);
+    ~TCPMessageServer(){};
+
+protected:
+    void incomingConnection(qintptr socketDescriptor) override;
 };
 
 #endif
