@@ -48,3 +48,5 @@ elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
 else()
     message(WARNING "You are using an unsupported compiler! Compilation has only been tested with Clang and GCC.")
 endif()
+
+install(TARGETS LaunchServer DESTINATION bin)
