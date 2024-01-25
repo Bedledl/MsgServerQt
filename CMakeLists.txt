@@ -26,7 +26,7 @@ add_executable(LaunchClient mainClient.cpp)
 
 add_subdirectory(communication)
 add_subdirectory(connConfigurator)
-
+add_subdirectory(common)
 add_subdirectory(server)
 add_subdirectory(client)
 target_link_libraries(LaunchServer Server Qt::Network Qt6::Widgets)
