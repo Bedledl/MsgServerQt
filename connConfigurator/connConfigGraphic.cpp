@@ -8,7 +8,6 @@
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <QVariant>
-#include <expected>
 
 #include "connConfigGraphic.h"
 #include "connConfigurator.h"
@@ -69,7 +68,7 @@ ConnConfiguratorGraphic::ConnConfiguratorGraphic(QWidget *parent) : QDialog(pare
 
 ConnConfiguratorGraphic::~ConnConfiguratorGraphic(){};
 
-std::expected<std::pair<QString, quint16>, std::exception> ConnConfiguratorGraphic::retrieveConnectionConfiguration()
+std::pair<QString, quint16> ConnConfiguratorGraphic::retrieveConnectionConfiguration()
 {
     return std::pair{addrBox->currentText(), portLineEdit->text().toInt()};
 }

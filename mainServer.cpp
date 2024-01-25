@@ -20,12 +20,7 @@ int main(int argc, char *argv[])
                      {
                          try
                          {
-                             auto expect_conn_details = config.retrieveConnectionConfiguration();
-                             if (!expect_conn_details.has_value())
-                             {
-                                 throw ServerFailedToStart();
-                             }
-                             auto &[ip, port] = expect_conn_details.value();
+                             auto [ip, port] = config.retrieveConnectionConfiguration();
                              serverApp = std::make_unique<ServerApplication>(std::make_unique<TCPMessageServer>(QHostAddress(ip), port));
                          }
                          catch (ServerFailedToStart &exc)

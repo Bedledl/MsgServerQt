@@ -19,12 +19,7 @@ int main(int argc, char *argv[])
                      {
                          try
                          {
-                             auto expect_conn_details = config.retrieveConnectionConfiguration();
-                             if (!expect_conn_details.has_value())
-                             {
-                                 throw ClientFailedToConnect();
-                             }
-                             auto &[ip, port] = expect_conn_details.value();
+                             auto [ip, port] = config.retrieveConnectionConfiguration();
                              clientApp = std::make_unique<ClientApp>(std::make_unique<Client>(QHostAddress(ip), port));
                          }
                          catch (ClientFailedToConnect &exc)

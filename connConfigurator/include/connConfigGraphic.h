@@ -3,7 +3,6 @@
 #include <QComboBox>
 #include <QDialog>
 #include <QNetworkInterface>
-#include <expected>
 
 #include "connConfigurator.h"
 
@@ -26,7 +25,7 @@ signals:
 public:
     ConnConfiguratorGraphic(QWidget *parent = nullptr);
     ~ConnConfiguratorGraphic();
-    std::expected<std::pair<QString, quint16>, std::exception> retrieveConnectionConfiguration() override;
+    std::pair<QString, quint16> retrieveConnectionConfiguration() override;
 public slots:
     void displayError(std::exception &exc);
 };

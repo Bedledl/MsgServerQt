@@ -2,7 +2,6 @@
 #define CONN_CONFIG_H
 
 #include <QNetworkInterface>
-#include <expected>
 
 class ConnConfigurator
 {
@@ -12,7 +11,7 @@ protected:
 
 public:
     virtual ~ConnConfigurator() {};
-    virtual std::expected<std::pair<QString, quint16>, std::exception> retrieveConnectionConfiguration() = 0;
+    virtual std::pair<QString, quint16> retrieveConnectionConfiguration() = 0;
 };
 
 #endif
