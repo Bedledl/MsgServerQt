@@ -22,15 +22,15 @@ find_package(Qt6 REQUIRED COMPONENTS Widgets)
 qt_standard_project_setup()
 
 add_executable(LaunchServer mainServer.cpp)
-#add_executable(LunchClient mainClient.cpp)
+add_executable(LaunchClient mainClient.cpp)
 
 add_subdirectory(communication)
 add_subdirectory(connConfigurator)
 
 add_subdirectory(server)
-#add_subdirectory(client)
+add_subdirectory(client)
 target_link_libraries(LaunchServer Server Qt::Network Qt6::Widgets)
-#target_link_libraries(LaunchClient Client)
+target_link_libraries(LaunchClient Client Qt::Network Qt6::Widgets)
 
 set_property(TARGET LaunchServer PROPERTY AUTOMOC ON)
 
