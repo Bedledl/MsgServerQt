@@ -10,8 +10,14 @@
 #include <QCommandLineParser>
 #include <QDir>
 
+#include <QtGlobal>
+#include <QByteArray>
+
 int main(int argc, char *argv[])
 {
+    // Needed to enable logging to syslog or journald.
+    qputenv("QT_LOGGING_TO_CONSOLE", QByteArray("0"));
+    qDebug("Debug log message from Qt test program");
 
     QApplication app(argc, argv);
     QApplication::setApplicationDisplayName("TCP Message Server");
