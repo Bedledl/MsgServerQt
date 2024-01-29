@@ -1,6 +1,7 @@
 
 #include <QComboBox>
 #include <QDialog>
+#include <QEventLoop>
 #include <QLineEdit>
 #include <QMessageBox>
 #include <QNetworkInterface>
@@ -70,6 +71,14 @@ ConnConfiguratorGraphic::~ConnConfiguratorGraphic(){};
 
 std::pair<QString, quint16> ConnConfiguratorGraphic::retrieveConnectionConfiguration()
 {
+    show();
+
+    QEventLoop loop;
+    connect(this, &ConnConfiguratorGraphic::configReady, &loop, &QEventLoop::quit);
+    loop.exec();
+
+    hide();
+
     return std::pair{addrBox->currentText(), portLineEdit->text().toInt()};
 }
 
