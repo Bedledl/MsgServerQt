@@ -21,6 +21,9 @@ public slots:
 signals:
     void finished();
     void error(QTcpSocket::SocketError socketError);
+
+protected:
+    std::shared_ptr<Communicator> communicator;
 };
 
 class TCPServerWorker : public Worker
@@ -37,7 +40,6 @@ private:
     qintptr socketDescriptor;
     QTcpSocket *tcpSocket;
     QString name;
-    std::unique_ptr<Communicator> communicator;
     QDataStream in;
     QByteArray block;
     QDataStream out{&block, QIODevice::WriteOnly};
