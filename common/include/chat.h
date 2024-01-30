@@ -8,6 +8,8 @@
 
 #include "message.h"
 
+typedef uint8_t ChatKey;
+
 class Chat : public QObject
 {
     Q_OBJECT

@@ -4,58 +4,57 @@
 #include <mutex>
 #include <set>
 
-template <typename T>
-class UniqueKey
+template <typename K>
+class UniqueKeyGenerator
 {
-    unsigned key;
-    static unsigned iterator;
-    static std::set<unsigned> reserved_keys;
-    static std::mutex mutex;
+    static inline K iterator = std::numeric_limits<K>::min();
+    static inline std::set<K> reserved_keys = {};
+    static inline std::mutex mutex = std::mutex();
+    static inline UniqueKeyGenerator<K> *instance = nullptr;
 
-    unsigned find_next_available_key(unsigned iter)
+    UniqueKeyGenerator() = default;
+    ~UniqueKeyGenerator() = default;
+    UniqueKeyGenerator(const UniqueKeyGenerator &) = delete;
+    UniqueKeyGenerator &operator=(const UniqueKeyGenerator &) = delete;
+
+public:
+    K requestKey()
     {
-        while (reserved_keys.contains(iter))
+        std::lock_guard lock(mutex);
+
+        while (reserved_keys.contains(iterator))
         {
-            if (iter < std::numeric_limits<unsigned>::max())
+            if (iterator < std::numeric_limits<K>::max())
             {
-                ++iter;
+                ++iterator;
             }
             else
             {
-                iter = std::numeric_limits<unsigned>::min();
+                iterator = std::numeric_limits<K>::min();
             }
         }
-        return iter;
-    }
-
-public:
-    UniqueKey()
-    {
-        std::lock_guard lock(mutex);
-
-        key = find_next_available_key(iterator);
+        auto new_key = iterator;
+        reserved_keys.emplace(std::move(new_key));
         ++iterator;
-        reserved_keys.insert(key);
+        return new_key;
     };
-    ~UniqueKey()
+    void releaseKey(const K &key)
     {
         std::lock_guard lock(mutex);
 
-        reserved_keys.erase(key);
+        reserved_keys.erase(reserved_keys.find(key));
     }
-    UniqueKey(UniqueKey &k) = delete;
-    UniqueKey &operator=(const UniqueKey &k) = delete;
-    auto operator<=>(const UniqueKey &other) const = default;
-    unsigned getKey() const { return key; }
+    static UniqueKeyGenerator *get_instance()
+    {
+        std::lock_guard lock(mutex);
+
+        if (!instance)
+        {
+            instance = new UniqueKeyGenerator();
+        }
+
+        return instance;
+    }
 };
-
-template <typename T>
-unsigned UniqueKey<T>::iterator = 0;
-
-template <typename T>
-std::set<unsigned> UniqueKey<T>::reserved_keys = {};
-
-template <typename T>
-std::mutex UniqueKey<T>::mutex = std::mutex();
 
 #endif
