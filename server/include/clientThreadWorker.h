@@ -7,6 +7,7 @@
 
 class Communicator;
 class Server;
+class ServerParticipant;
 
 // https://doc.qt.io/qt-6/qtnetwork-fortuneclient-example.html
 
@@ -45,5 +46,6 @@ private:
     QDataStream in;
     QByteArray block;
     QDataStream out{&block, QIODevice::WriteOnly};
+    std::unique_ptr<ServerParticipant> participant;
 };
 #endif
