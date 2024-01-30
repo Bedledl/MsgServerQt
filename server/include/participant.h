@@ -2,8 +2,9 @@
 #include <QString>
 
 #include "uniqueKey.h"
+#include <cstdint>
 
-typedef uint8_8 ParticipantKey;
+typedef uint8_t ParticipantKey;
 
 class Participant
 {
@@ -12,7 +13,7 @@ class Participant
         const QDateTime registered_since;
 
 public:
-        Participant() : registered_since(QDateTime::currentDateTime()), key(UniqueKeyGenerator<ParticipantKey>.get_instance()->requestKey())
+        Participant() : key(UniqueKeyGenerator<ParticipantKey>::get_instance()->requestKey()), registered_since(QDateTime::currentDateTime())
         {
                 name = "Unknown";
         };
