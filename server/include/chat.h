@@ -8,13 +8,18 @@
 
 class ServerChat : public Chat
 {
-    const UniqueKey<ServerChat> key;
+    const ChatKey key;
     QReadWriteLock lock;
 
 public:
+    ServerChat() : key(UniqueKeyGenerator<ChatKey>::get_instance()->requestKey()){};
+    ~ServerChat()
+    {
+        UniqueKeyGenerator<ChatKey>::get_instance()->releaseKey(key);
+    };
     void foreach_do(std::function<void(const Message &)> func);
     void add_message(Message msg);
-    const UniqueKey<ServerChat> &get_key() const { return key; };
+    ChatKey get_key() const { return key; };
 };
 
 /// @brief Global Chat as threadsafe Singleton, because we want to have exactly one instance available over the lifetime of the server.
