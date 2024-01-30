@@ -26,6 +26,7 @@ Client::Client(QHostAddress ip, quint16 port, QObject *parent)
             //! [3]
             [&](QAbstractSocket::SocketError socketError)
             { qDebug() << tcpSocket->errorString(); });
+    out << communicator->welcomeMessage();
 }
 
 void Client::readFromSocketAndAswer()
