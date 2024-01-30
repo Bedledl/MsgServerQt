@@ -1,0 +1,42 @@
+syntax = "proto2";
+
+import "serverClientCommunication.proto";
+
+enum ServerCommandId {
+    ServerGenericResponse = 0;
+    ServerChatCommand = 1;
+    ServerParticipantCommand = 2;
+}
+
+enum ServerChatCommandId {
+    AddedToChat = 0;
+    ServerNewMessage = 1;
+    LeftChat = 2;
+}
+
+enum ServerParticipantCommandId {
+    SendName = 0;
+    SendEntryDate = 1;
+}
+
+message ServerCommand {
+    message ServerChatCommand {
+        optional int32 chatKey = 1;
+        optional ServerChatCommandId cmd = 2;
+        optional Data data = 3;
+    }
+
+    message ServerParticipantCommand {
+        optional int32 participantKey = 1;
+        optional ServerParticipantCommandId cmd = 2;
+        optional Data data = 3;
+    }
+
+    optional ServerCommandId cmd = 1;
+
+    oneof content {
+        Data data = 2;
+        ServerChatCommand chatCmd = 3;
+        ServerParticipantCommand participantCmd = 4;
+    }
+}
