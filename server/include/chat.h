@@ -8,18 +8,17 @@
 
 class ServerChat : public Chat
 {
-    const ChatKey key;
+    Q_OBJECT
     QReadWriteLock lock;
 
 public:
-    ServerChat() : key(UniqueKeyGenerator<ChatKey>::get_instance()->requestKey()){};
+    ServerChat(QObject *parent=nullptr) : Chat(UniqueKeyGenerator<ChatKey>::get_instance()->requestKey(), parent){};
     ~ServerChat()
     {
         UniqueKeyGenerator<ChatKey>::get_instance()->releaseKey(key);
     };
     void foreach_do(std::function<void(const Message &)> func);
     void add_message(Message msg);
-    ChatKey get_key() const { return key; };
 };
 
 #endif
