@@ -2,8 +2,10 @@
 #define CLIENT_H
 
 #include <QAbstractSocket>
+#include <QMap>
 #include <QObject>
 
+#include "chat.h"
 #include "communicators.h"
 
 QT_BEGIN_NAMESPACE
@@ -24,6 +26,21 @@ class Client : public QObject
     Q_OBJECT
 public:
     explicit Client(QHostAddress ip, quint16 port, QObject *parent = nullptr);
+    void addChat(const ChatKey &key) { chats.insert(key, new Chat(key, this)); }
+    void leaveChat(const ChatKey &key)
+    {
+        auto chat = chats.take(key);
+        delete chat;
+    }
+    void addNewMessage(const ChatKey &key, QString content, uint8_t participantKey, QDateTime timestamp)
+    {
+        if (auto search = chats.find(key); search != chats.end())
+        {
+            auto chat_ptr = *search;
+            chat_ptr->addMessage(content, participantKey, timestamp);
+        }
+    }
+ 
 private slots:
     void readFromSocketAndAswer();
 
@@ -34,6 +51,7 @@ private:
     QByteArray block;
     QDataStream out{&block, QIODevice::WriteOnly};
     Communicator *communicator;
+    QMap<ChatKey, Chat *> chats;
 };
 
 #endif
