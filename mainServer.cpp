@@ -29,10 +29,12 @@ int main(int argc, char *argv[])
     auto [ip, port] = connConfigurator->retrieveConnectionConfiguration();
 
     std::unique_ptr<ServerApplication> serverApp;
+    std::unique_ptr<TCPMessageServer> server = std::make_unique<TCPMessageServer>(QHostAddress(ip), port);
+    auto globalChat = server->getGlobalChat();
 
     try
     {
-        serverApp = std::make_unique<ServerApplication>(std::make_unique<TCPMessageServer>(QHostAddress(ip), port));
+        serverApp = std::make_unique<ServerApplication>(std::move(server));
     }
     catch (ServerFailedToStart &exc)
     {
@@ -40,7 +42,7 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
-    serverApp->add_chat(new ChatGui(serverApp.get(), GlobalChat::get_instance()));
+    serverApp->add_chat(new ChatGui(serverApp.get(), globalChat.get()));
 
     serverApp->show();
 

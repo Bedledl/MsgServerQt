@@ -1,7 +1,9 @@
 #ifndef SERVER_H
 #define SERVER_H
+#include "chat.h"
 #include "clientThreadWorker.h"
 #include <exception>
+#include <memory>
 
 // https://doc.qt.io/qt-6/qtnetwork-threadedfortuneserver-example.html
 
@@ -16,10 +18,18 @@ class ServerFailedToStart : public std::exception
 class Server
 {
 public:
-    virtual ~Server(){};
+    virtual ~Server()
+    {
+        globalChat = std::make_shared<ServerChat>();
+    };
+    std::shared_ptr<ServerChat> getGlobalChat()
+    {
+        return globalChat;
+    }
 
 protected:
     void create_new_client_thread(Worker *worker);
+    std::shared_ptr<ServerChat> globalChat;
 };
 
 #endif
