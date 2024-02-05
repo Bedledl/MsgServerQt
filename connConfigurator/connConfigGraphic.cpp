@@ -39,6 +39,7 @@ ConnConfiguratorGraphic::ConnConfiguratorGraphic(QWidget *parent) : QDialog(pare
 {
     ifaceBox = std::make_unique<QComboBox>();
     addrBox = std::make_unique<QComboBox>();
+    addrBox->setEditable(true);
     portLineEdit = std::make_unique<QLineEdit>();
     connectButton = std::make_unique<QPushButton>("Connect");
 
