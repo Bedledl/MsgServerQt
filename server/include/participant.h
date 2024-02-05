@@ -1,21 +1,16 @@
 #include <QDateTime>
 #include <QString>
 
+#include "common/include/participant.h"
 #include "uniqueKey.h"
 
-typedef uint8_8 ParticipantKey;
-
-class Participant
+class ServerParticipant : public Participant
 {
-        const ParticipantKey key;
-        QString name;
-        const QDateTime registered_since;
 
 public:
-        Participant() : registered_since(QDateTime::currentDateTime()), key(UniqueKeyGenerator<ParticipantKey>.get_instance()->requestKey())
+        ServerParticipant() : Participant(UniqueKeyGenerator<ParticipantKey>::get_instance()->requestKey())
         {
+                registeredSince = QDateTime::currentDateTime();
                 name = "Unknown";
         };
-        void setName(QString new_name) { name = new_name; };
-        ParticipantKey getKey() const { return key; }
 };
