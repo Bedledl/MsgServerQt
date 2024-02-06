@@ -7,6 +7,7 @@
 
 #include "chat.h"
 #include "communicators.h"
+#include "participant.h"
 
 QT_BEGIN_NAMESPACE
 class QLabel;
@@ -40,7 +41,21 @@ public:
             chat_ptr->addMessage(content, participantKey, timestamp);
         }
     }
- 
+    void assignParticipantName(const ParticipantKey &key, QString name)
+    {
+        if (auto search = otherParticipants.find(key); search != otherParticipants.end())
+        {
+            search->setNickname(name);
+        }
+    }
+    void assignParticipantEntryDate(const ParticipantKey &key, QDateTime entryDate)
+    {
+        if (auto search = otherParticipants.find(key); search != otherParticipants.end())
+        {
+            search->setEntryDate(entryDate);
+        }
+    }
+
 private slots:
     void readFromSocketAndAswer();
 
@@ -52,6 +67,7 @@ private:
     QDataStream out{&block, QIODevice::WriteOnly};
     Communicator *communicator;
     QMap<ChatKey, Chat *> chats;
+    QMap<ParticipantKey, Participant> otherParticipants;
 };
 
 #endif
