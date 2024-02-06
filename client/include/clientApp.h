@@ -2,7 +2,8 @@
 #define CLIENT_APP_H
 
 #include "appGui.h"
-#include "client.h"
+
+class Client;
 
 class ClientApp : public AppGui
 {

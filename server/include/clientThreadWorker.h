@@ -5,7 +5,7 @@
 #include <QTcpSocket>
 #include <QThread>
 
-#include "communicators.h"
+class Communicator;
 
 // https://doc.qt.io/qt-6/qtnetwork-fortuneclient-example.html
 

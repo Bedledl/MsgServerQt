@@ -6,8 +6,9 @@
 #include <QObject>
 
 #include "chat.h"
-#include "communicators.h"
 #include "participant.h"
+
+class Communicator;
 
 QT_BEGIN_NAMESPACE
 class QLabel;
