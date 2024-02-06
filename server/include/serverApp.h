@@ -6,7 +6,8 @@
 #include <QWidget>
 
 #include "appGui.h"
-#include "server.h"
+
+class Server;
 
 // #include "serverApp.moc"
 

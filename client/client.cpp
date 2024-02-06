@@ -7,7 +7,7 @@
 #include <QString>
 #include <QTcpSocket>
 
-#include "iostream"
+#include <iostream>
 
 #include "moc_client.cpp"
 

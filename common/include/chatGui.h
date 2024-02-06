@@ -1,11 +1,12 @@
 #ifndef CHAT_GUI_H
 #define CHAT_GUI_H
 
-#include "chat.h"
 #include <QLabel>
 #include <QVector>
 #include <QWidget>
 #include <memory>
+
+class Chat;
 
 // if chat is closed may cease membership in chat
 

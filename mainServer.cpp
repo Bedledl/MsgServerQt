@@ -1,4 +1,5 @@
 #include "chat.h"
+#include "chatGui.h"
 #include "configParser.h"
 #include "connConfigGraphic.h"
 #include "server/include/serverApp.h"

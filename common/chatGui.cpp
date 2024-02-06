@@ -1,4 +1,5 @@
 #include "chatGui.h"
+#include "chat.h"
 #include "moc_chatGui.cpp"
 #include <iostream>
 
