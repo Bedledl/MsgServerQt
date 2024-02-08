@@ -17,7 +17,9 @@ void configureParser(QCommandLineParser &parser, QString configFileCmdLineOptNam
     QCommandLineOption configFileOption(QStringList() << configFileCmdLineOptName,
                                         QCoreApplication::translate("main", "Specfiy config file to configure connection with."),
                                         QCoreApplication::translate("main", "directory"));
+    QCommandLineOption pingOption(QStringList() << "ping", QCoreApplication::translate("main", "Enable pinging between server and client for debugging."));
     parser.addOption(configFileOption);
+    parser.addOption(pingOption);
 }
 
 std::unique_ptr<ConnConfigurator> createConnConfiguratorFromSettings(QCommandLineParser &parser, QString configFileCmdLineOptName)
@@ -29,4 +31,9 @@ std::unique_ptr<ConnConfigurator> createConnConfiguratorFromSettings(QCommandLin
     }
     QFile file(configFilePath);
     return std::make_unique<ConnFileConfigurator>(file);
+}
+
+bool parsePingConfig(QCommandLineParser &parser, QString pingingModeCmdLineOptName)
+{
+    return parser.isSet(pingingModeCmdLineOptName);
 }

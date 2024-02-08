@@ -5,18 +5,25 @@
 
 #include <unistd.h>
 
-TCPServerWorker::TCPServerWorker(qintptr socketDescriptor, QObject *parent)
+TCPServerWorker::TCPServerWorker(qintptr socketDescriptor, bool usePingCommunicator, QObject *parent)
     : Worker(parent), socketDescriptor(socketDescriptor)
 {
     tcpSocket = new QTcpSocket(this);
     in.setVersion(QDataStream::Qt_6_6);
     out.setVersion(QDataStream::Qt_6_6);
     connect(tcpSocket, &QTcpSocket::readyRead, this, &TCPServerWorker::readFromSocketAndAswer);
+    if (usePingCommunicator)
+    {
+        communicator = std::make_unique<PingPongCommunicator>();
+    }
+    else
+    {
+        communicator = std::make_unique<ServerCommunicator>(server);
+    }
 }
 
 void TCPServerWorker::process()
 {
-    communicator = std::make_unique<PingPongCommunicator>();
 
     if (!tcpSocket->setSocketDescriptor(socketDescriptor))
     {

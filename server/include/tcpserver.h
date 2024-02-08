@@ -10,10 +10,11 @@ class TCPMessageServer : public QTcpServer, public Server
 {
     Q_OBJECT
 public:
-    TCPMessageServer(QHostAddress ip, quint16 port, QObject *parent = nullptr);
+    TCPMessageServer(QHostAddress ip, quint16 port, bool usePingCommunicator, QObject *parent = nullptr);
     ~TCPMessageServer(){};
 
 protected:
+    bool usePingCommunicator;
     void incomingConnection(qintptr socketDescriptor) override;
 };
 

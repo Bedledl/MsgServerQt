@@ -1,5 +1,5 @@
 #include "include/client.h"
-#include "communicators.h"
+#include "include/communicators.h"
 
 #include <QDebug>
 #include <QIODevice>
@@ -11,11 +11,19 @@
 
 #include "moc_client.cpp"
 
-Client::Client(QHostAddress ip, quint16 port, QObject *parent)
+Client::Client(QHostAddress ip, quint16 port, bool pingMode, QObject *parent)
     : QObject(parent), tcpSocket(new QTcpSocket(this))
 {
     std::cout << "client constrctor" << std::endl;
-    communicator = new PingPongCommunicator();
+
+    if (pingMode)
+    {
+        communicator = new PingPongCommunicator();
+    }
+    else
+    {
+        communicator = new ClientCommunicator(this);
+    }
     tcpSocket->connectToHost(ip, port);
     in.setDevice(tcpSocket);
     in.setVersion(QDataStream::Qt_6_6);
