@@ -4,17 +4,20 @@
 #include <memory>
 
 #include "communicator.h"
-
+class ServerParticipant;
 class Server;
 
 class ServerCommunicator : public Communicator
 {
-    Server *server;
 
 public:
-    ServerCommunicator(Server *server) : server(server) {}
+    ServerCommunicator(Server *server, ServerParticipant *participant) : server(server), participant(participant) {}
     QString answerMessage(QString msg) override;
     QString welcomeMessage() override;
+
+private:
+    Server *const server;
+    ServerParticipant *const participant;
 };
 
 #endif

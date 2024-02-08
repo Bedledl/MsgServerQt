@@ -1,6 +1,7 @@
 #include "clientThreadWorker.h"
 #include "communicators.h"
 #include "moc_clientThreadWorker.cpp"
+#include "participant.h"
 #include <iostream>
 
 #include <unistd.h>
@@ -8,7 +9,7 @@
 class Server;
 
 TCPServerWorker::TCPServerWorker(Server *server, qintptr socketDescriptor, bool usePingCommunicator, QObject *parent)
-    : Worker(server, parent), socketDescriptor(socketDescriptor)
+    : Worker(server, parent), socketDescriptor(socketDescriptor), participant(std::make_unique<ServerParticipant>())
 {
     tcpSocket = new QTcpSocket(this);
     in.setVersion(QDataStream::Qt_6_6);
@@ -20,7 +21,7 @@ TCPServerWorker::TCPServerWorker(Server *server, qintptr socketDescriptor, bool 
     }
     else
     {
-        communicator = std::make_unique<ServerCommunicator>(server);
+        communicator = std::make_unique<ServerCommunicator>(server, participant.get());
     }
 }
 

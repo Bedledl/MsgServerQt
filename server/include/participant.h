@@ -1,8 +1,8 @@
 #include <QDateTime>
 #include <QString>
 
+#include "../../common/include/participant.h"
 #include "chat.h"
-#include "common/include/participant.h"
 #include "uniqueKey.h"
 #include <algorithm>
 #include <memory>
