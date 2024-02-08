@@ -1,9 +1,9 @@
 #ifndef CLIENT_COMMUNICATORS_H
 #define CLIENT_COMMUNICATORS_H
-
 #include "clientMsgFormats.pb.h"
 #include "communicator.h"
 #include "serverMsgFormats.pb.h"
+
 #include <QDate>
 #include <QString>
 
@@ -30,7 +30,7 @@ private:
         serverCmd.set_allocated_data(data);
         return serverCmd.SerializeAsString();
     }
-    Client *client;
+    Client *const client;
 };
 
 #endif

@@ -1,13 +1,24 @@
 #include "clientMsgFormats.pb.h"
 #include "communicators.h"
+#include "participant.h"
 #include "server.h"
 #include "serverMsgFormats.pb.h"
 #include <QString>
+
+void ServerCommunicator::buildGenericResponse(ServerCommand &cmdBuf, ResponseCode code)
+{
+    cmdBuf.set_cmd(ServerCommandId::ServerGenericResponse);
+    auto data = new Data();
+    data->set_response(code);
+    cmdBuf.set_allocated_data(data);
+}
 
 QString ServerCommunicator::answerMessage(QString msg)
 {
     ClientCommand incomingCmd;
     incomingCmd.ParseFromString(msg.toStdString());
+
+    ServerCommand outgoingCmd;
 
     std::cout << "Incoming Client Message: ";
 
@@ -16,14 +27,25 @@ QString ServerCommunicator::answerMessage(QString msg)
 
     case ClientCommandId::SetNickname:
     {
-        // TODO
+        auto name = incomingCmd.data().name().name();
+        participant->setNickname(QString(name.c_str()));
+        buildGenericResponse(outgoingCmd, ResponseCode::SUCCESS);
         std::cout << "Client Set Nickname Cmd\n";
         break;
     }
 
     case ClientCommandId::NewChat:
     {
-        // TODO
+        auto newChatKey = participant->newChat();
+
+        outgoingCmd.set_cmd(ServerCommandId::ServerChatCommand);
+        auto chatCmd = new ServerCommand_ServerChatCommand();
+
+        chatCmd->set_cmd(ServerChatCommandId::AddedToChat);
+        chatCmd->set_chatkey(newChatKey);
+
+        outgoingCmd.set_allocated_chatcmd(chatCmd);
+
         std::cout << "Client New Chat Cmd\n";
         break;
     }
@@ -32,6 +54,8 @@ QString ServerCommunicator::answerMessage(QString msg)
     {
         // TODO
         std::cout << "Client Get Chat Keys Cmd\n";
+        std::cout << "Acually, i don't want to use this method, because i want to prevent sending multiple chat keys at once?\n";
+
         break;
     }
 
@@ -63,12 +87,17 @@ QString ServerCommunicator::answerMessage(QString msg)
     case ClientCommandId::ClientChatCommand:
     {
         auto chatCmd = incomingCmd.chatcmd();
+        auto chatKey = chatCmd.chatkey();
+        auto data = chatCmd.data();
         switch (chatCmd.cmd())
         {
 
         case ClientChatCommandId::NewClientMessage:
         {
-            std::cout << "New Client Message\n";
+            auto message = data.chatmsg().content();
+            participant->newMessage(chatKey, QString(message.c_str()));
+            std::cout
+                << "New Client Message\n";
             // TODO
             break;
         }
@@ -120,13 +149,12 @@ QString ServerCommunicator::answerMessage(QString msg)
         {
             std::cout << "Add Participant To Chat\n";
             // TODO
-            break;
         }
+        break;
 
         default:
         {
             std::cout << "Unknown Message\n";
-            break;
             // TODO
         }
         }
@@ -141,6 +169,7 @@ QString ServerCommunicator::answerMessage(QString msg)
 
     ServerCommand outgoing;
     outgoing.set_cmd(ServerCommandId::ServerGenericResponse);
+    sleep(10);
     return QString(outgoing.SerializeAsString().c_str());
 }
 

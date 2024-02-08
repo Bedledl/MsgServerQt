@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <memory>
 
-
 class ServerParticipant : public Participant
 {
         std::vector<std::shared_ptr<ServerChat>> chats;
@@ -34,7 +33,7 @@ public:
                 return chatKeys;
         }
         /// @brief should be called from the Client thread when the clients sent a new message
-        void newMessage(ChatKey &chat_key) { qDebug("NotImplemented yet"); };
-        void getParticipantKeys(ChatKey &chat_key) { qDebug("NotImplemented yet"); };
-        void leaveChat(ChatKey &chat_key) { qDebug("NotImplemented yet"); }
+        void newMessage(ChatKey chat_key, QString content) { qDebug("NotImplemented yet"); };
+        void getParticipantKeys(ChatKey chat_key) { qDebug("NotImplemented yet"); };
+        void leaveChat(ChatKey chat_key) { qDebug("NotImplemented yet"); }
 };

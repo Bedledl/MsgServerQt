@@ -9,7 +9,7 @@
 
 #include "message.h"
 
-typedef uint8_t ChatKey;
+typedef unsigned ChatKey;
 
 class Chat : public QObject
 {
