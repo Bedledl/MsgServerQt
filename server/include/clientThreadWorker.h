@@ -6,6 +6,7 @@
 #include <QThread>
 
 class Communicator;
+class Server;
 
 // https://doc.qt.io/qt-6/qtnetwork-fortuneclient-example.html
 
@@ -13,7 +14,7 @@ class Worker : public QObject
 {
     Q_OBJECT
 public:
-    Worker(QObject *parent) : QObject(parent){};
+    Worker(Server *server, QObject *parent) : QObject(parent), server(server){};
     ~Worker(){};
 
 public slots:
@@ -23,6 +24,7 @@ signals:
     void error(QTcpSocket::SocketError socketError);
 
 protected:
+    Server *server;
     std::shared_ptr<Communicator> communicator;
 };
 
@@ -30,7 +32,7 @@ class TCPServerWorker : public Worker
 {
     Q_OBJECT
 public:
-    TCPServerWorker(qintptr socketDescriptor, bool usePingCommunicator, QObject *parent);
+    TCPServerWorker(Server *server, qintptr socketDescriptor, bool usePingCommunicator, QObject *parent);
     QString get_name() const { return name; }
 public slots:
     void process() override;

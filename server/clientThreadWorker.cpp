@@ -5,8 +5,10 @@
 
 #include <unistd.h>
 
-TCPServerWorker::TCPServerWorker(qintptr socketDescriptor, bool usePingCommunicator, QObject *parent)
-    : Worker(parent), socketDescriptor(socketDescriptor)
+class Server;
+
+TCPServerWorker::TCPServerWorker(Server *server, qintptr socketDescriptor, bool usePingCommunicator, QObject *parent)
+    : Worker(server, parent), socketDescriptor(socketDescriptor)
 {
     tcpSocket = new QTcpSocket(this);
     in.setVersion(QDataStream::Qt_6_6);
