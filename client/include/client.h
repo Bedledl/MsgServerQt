@@ -27,7 +27,7 @@ class Client : public QObject
 {
     Q_OBJECT
 public:
-    explicit Client(QHostAddress ip, quint16 port, QObject *parent = nullptr);
+    explicit Client(QHostAddress ip, quint16 port, bool pingMode, QObject *parent = nullptr);
     void addChat(const ChatKey &key) { chats.insert(key, new Chat(key, this)); }
     void leaveChat(const ChatKey &key)
     {

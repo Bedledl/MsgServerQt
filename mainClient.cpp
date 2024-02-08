@@ -15,11 +15,13 @@ int main(int argc, char *argv[])
     QApplication::setApplicationVersion("1.0");
 
     QString configFileCmdLineOptName = "config-file";
+    QString pingingModeCmdLineOptName = "ping";
     QCommandLineParser parser;
     configureParser(parser, configFileCmdLineOptName);
     parser.process(app);
 
     std::unique_ptr<ConnConfigurator> connConfigurator = createConnConfiguratorFromSettings(parser, configFileCmdLineOptName);
+    bool usePingCommunicator = parsePingConfig(parser, pingingModeCmdLineOptName);
 
     // may block until conneciton configuration is retrieved
     auto [ip, port] = connConfigurator->retrieveConnectionConfiguration();
@@ -28,7 +30,7 @@ int main(int argc, char *argv[])
 
     try
     {
-        clientApp = std::make_unique<ClientApp>(std::make_unique<Client>(QHostAddress(ip), port));
+        clientApp = std::make_unique<ClientApp>(std::make_unique<Client>(QHostAddress(ip), port, usePingCommunicator));
     }
     catch (ClientFailedToConnect &exc)
     {

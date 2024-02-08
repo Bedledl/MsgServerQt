@@ -20,17 +20,19 @@ int main(int argc, char *argv[])
     QApplication::setApplicationVersion("1.0");
 
     QString configFileCmdLineOptName = "config-file";
+    QString pingingModeCmdLineOptName = "ping";
     QCommandLineParser parser;
     configureParser(parser, configFileCmdLineOptName);
     parser.process(app);
 
     std::unique_ptr<ConnConfigurator> connConfigurator = createConnConfiguratorFromSettings(parser, configFileCmdLineOptName);
+    bool usePingCommunicator = parsePingConfig(parser, pingingModeCmdLineOptName);
 
     // may block until conneciton configuration is retrieved
     auto [ip, port] = connConfigurator->retrieveConnectionConfiguration();
 
     std::unique_ptr<ServerApplication> serverApp;
-    std::unique_ptr<TCPMessageServer> server = std::make_unique<TCPMessageServer>(QHostAddress(ip), port);
+    std::unique_ptr<TCPMessageServer> server = std::make_unique<TCPMessageServer>(QHostAddress(ip), port, usePingCommunicator);
     auto globalChat = server->getGlobalChat();
 
     try

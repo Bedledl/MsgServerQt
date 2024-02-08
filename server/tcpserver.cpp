@@ -8,7 +8,7 @@
 
 #include <iostream>
 
-TCPMessageServer::TCPMessageServer(QHostAddress ip, quint16 port, QObject *parent) : QTcpServer(parent)
+TCPMessageServer::TCPMessageServer(QHostAddress ip, quint16 port, bool usePingCommunicator, QObject *parent) : QTcpServer(parent), usePingCommunicator(usePingCommunicator)
 {
 
     // copied from https://code.qt.io/cgit/qt/qtbase.git/tree/examples/network/fortuneserver/server.cpp?h=6.6
@@ -25,5 +25,5 @@ TCPMessageServer::TCPMessageServer(QHostAddress ip, quint16 port, QObject *paren
 void TCPMessageServer::incomingConnection(qintptr socketDescriptor)
 {
     std::cout << "incoming Connection" << std::endl;
-    create_new_client_thread(new TCPServerWorker(socketDescriptor, this->QTcpServer::parent()));
+    create_new_client_thread(new TCPServerWorker(socketDescriptor, usePingCommunicator, this->QTcpServer::parent()));
 }

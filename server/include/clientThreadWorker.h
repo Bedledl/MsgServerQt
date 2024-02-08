@@ -30,7 +30,7 @@ class TCPServerWorker : public Worker
 {
     Q_OBJECT
 public:
-    TCPServerWorker(qintptr socketDescriptor, QObject *parent);
+    TCPServerWorker(qintptr socketDescriptor, bool usePingCommunicator, QObject *parent);
     QString get_name() const { return name; }
 public slots:
     void process() override;
