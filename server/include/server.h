@@ -18,9 +18,12 @@ class ServerFailedToStart : public std::exception
 class Server
 {
 public:
-    virtual ~Server()
+    Server()
     {
         globalChat = std::make_shared<ServerChat>();
+    }
+    virtual ~Server(){
+
     };
     std::shared_ptr<ServerChat> getGlobalChat()
     {
