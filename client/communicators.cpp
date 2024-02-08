@@ -90,6 +90,7 @@ QString ClientCommunicator::answerMessage(QString msg)
 
 QString ClientCommunicator::welcomeMessage()
 {
+    std::cout << "welcome Message\n";
     ClientCommand ccc;
     ccc.set_cmd(ClientCommandId::SetNickname);
 

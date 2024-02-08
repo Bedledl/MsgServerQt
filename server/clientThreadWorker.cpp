@@ -34,13 +34,16 @@ void TCPServerWorker::process()
     in.setDevice(tcpSocket);
 
     out << communicator->welcomeMessage();
+    std::cout << "after writing welcome Message\n";
     tcpSocket->write(block);
+    std::cout << "after sending welcome Message\n";
 
     // sleep(20); why does this sleep client too?
 }
 
 void TCPServerWorker::readFromSocketAndAswer()
 {
+    std::cout << "foobar\n";
     in.startTransaction();
     if (!in.commitTransaction())
     {
@@ -48,10 +51,14 @@ void TCPServerWorker::readFromSocketAndAswer()
         return;
     }
     QString msg;
+    std::cout << "1\n";
     in >> msg;
+    std::cout << "2\n";
 
     auto answer = communicator->answerMessage(msg);
+    std::cout << "3\n";
 
     out << answer;
+    std::cout << "4\n";
     tcpSocket->write(block);
 }

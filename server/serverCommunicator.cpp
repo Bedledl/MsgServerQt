@@ -11,6 +11,7 @@ QString ServerCommunicator::answerMessage(QString msg)
 
 QString ServerCommunicator::welcomeMessage()
 {
+    std::cout << "generate welcome message\n";
     ServerCommand addedToGlobalChat;
     addedToGlobalChat.set_cmd(ServerCommandId::ServerChatCommand);
 

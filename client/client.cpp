@@ -24,8 +24,14 @@ Client::Client(QHostAddress ip, quint16 port, bool pingMode, QObject *parent)
     {
         communicator = new ClientCommunicator(this);
     }
+
+    std::cout << "connectToHost\n";
+
     tcpSocket->connectToHost(ip, port);
+
+    std::cout << "SetDevice\n";
     in.setDevice(tcpSocket);
+    std::cout << "set versions\n";
     in.setVersion(QDataStream::Qt_6_6);
     out.setVersion(QDataStream::Qt_6_6);
     std::cout << "QDataStream Status: " << in.status() << std::endl;
@@ -34,6 +40,8 @@ Client::Client(QHostAddress ip, quint16 port, bool pingMode, QObject *parent)
             //! [3]
             [&](QAbstractSocket::SocketError socketError)
             { qDebug() << tcpSocket->errorString(); });
+    std::cout << "Write welcome Message:"
+              << "\n";
     out << communicator->welcomeMessage();
 }
 

@@ -12,7 +12,10 @@ class Client;
 class ClientCommunicator : public Communicator
 {
 public:
-    ClientCommunicator(Client *client) : client(client) {}
+    ClientCommunicator(Client *client) : client(client)
+    {
+        std::cout << "Client Communicator Initialisation\n";
+    }
     QString answerMessage(QString msg);
 
     QString welcomeMessage() override;
