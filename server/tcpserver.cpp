@@ -25,5 +25,5 @@ TCPMessageServer::TCPMessageServer(QHostAddress ip, quint16 port, bool usePingCo
 void TCPMessageServer::incomingConnection(qintptr socketDescriptor)
 {
     std::cout << "incoming Connection" << std::endl;
-    create_new_client_thread(new TCPServerWorker(socketDescriptor, usePingCommunicator, this->QTcpServer::parent()));
+    create_new_client_thread(new TCPServerWorker(this, socketDescriptor, usePingCommunicator, this->QTcpServer::parent()));
 }
