@@ -28,9 +28,8 @@ add_subdirectory(common)
 add_subdirectory(server)
 add_subdirectory(client)
 target_link_libraries(LaunchServer Server Qt::Network Qt6::Widgets)
-target_link_libraries(LaunchClient Client Qt::Network Qt6::Widgets)
+target_link_libraries(LaunchClient Client Qt::Network Qt6::Widgets commonGui)
 
 set_property(TARGET LaunchServer PROPERTY AUTOMOC ON)
-
 
 install(TARGETS LaunchServer DESTINATION bin)

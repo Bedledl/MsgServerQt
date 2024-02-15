@@ -12,4 +12,13 @@ target_include_directories(common PUBLIC
 ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
-target_link_libraries(common PUBLIC connConfigurator Qt6::Core Qt6::Widgets)
+add_subdirectory(qml)
+
+target_link_libraries(common PUBLIC
+    connConfigurator
+    Qt6::Core
+    Qt6::Widgets
+    Qt6::Gui
+    Qt6::Qml
+    Qt6::Quick
+)
