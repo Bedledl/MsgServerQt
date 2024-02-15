@@ -1,0 +1,14 @@
+import QtQuick 2.15
+import QtQuick.Layouts 2.15
+
+
+ListView {
+    id: chatList
+    Layout.fillWidth: true
+    Layout.fillHeight: true
+    clip: true
+    model: 20
+    delegate: ChatPreview {}
+    focus: true
+    spacing: 2
+}
