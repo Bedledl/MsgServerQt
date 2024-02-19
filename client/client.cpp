@@ -8,6 +8,7 @@
 #include <QString>
 #include <QTcpSocket>
 #include <qqml.h>
+#include <memory>
 
 #include <iostream>
 
@@ -48,7 +49,7 @@ Client::Client(QHostAddress ip, quint16 port, bool pingMode, QObject *parent)
     nickname = "Juliet";
     remoteIpString = ip.toString();
     remotePort = port;
-    chatPreviewListModel = new ChatPreviewListModel(&chats, this);
+    chatPreviewListModel = std::make_unique<ChatPreviewListModel>(&chats, this);
 }
 
 void Client::readFromSocketAndAswer()

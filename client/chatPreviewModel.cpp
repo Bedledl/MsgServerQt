@@ -1,5 +1,6 @@
 #include <QDateTime>
 
+#include "chat.h"
 #include "chatPreviewModel.h"
 #include <iostream>
 
@@ -16,7 +17,7 @@ QString ChatPreviewModel::lastMessage() const
     auto lastMsg = chat->get_last_message();
     if (lastMsg == nullptr)
     {
-        return "";
+        return "No messages yet.";
     }
     return lastMsg->getContent();
 };
@@ -24,6 +25,12 @@ QDateTime ChatPreviewModel::lastMessageTimestamp() const
 {
     qDebug() << "ChatPreviewModel::lastMessageTimestamp()";
     return QDateTime::currentDateTime();
+};
+
+uint ChatPreviewModel::getChatKey() const
+{
+    qDebug() << "ChatPreviewListModel::chatKey()";
+    return chat->getKey();
 };
 
 // and now implementations for the preview list
@@ -37,7 +44,7 @@ void ChatPreviewListModel::addChat(Chat *chat)
 void ChatPreviewListModel::removeChat(Chat *chat)
 {
     auto it = std::find_if(chatsPreviews.begin(), chatsPreviews.end(), [&chat](auto &cpm)
-                        { return chat == cpm->chat; });
+                           { return chat == cpm->chat; });
     if (it != chatsPreviews.end())
     {
         emit beginRemoveRows(QModelIndex(), std::distance(chatsPreviews.begin(), it), std::distance(chatsPreviews.begin(), it));

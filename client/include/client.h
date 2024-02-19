@@ -5,10 +5,11 @@
 #include <QAbstractSocket>
 #include <QMap>
 #include <QObject>
+#include <memory>
 #include <qqml.h>
 
-#include "chat.h"
 #include "chatPreviewModel.h"
+#include "chat.h"
 #include "participant.h"
 
 class Communicator;
@@ -33,6 +34,8 @@ class Client : public QObject
     Q_PROPERTY(int port READ getPort CONSTANT)
     Q_PROPERTY(QString ip READ getIp CONSTANT)
     Q_PROPERTY(ChatPreviewListModel *CPLmodel READ getChatPreviewListModel CONSTANT)
+    Q_PROPERTY(int selectedChat READ selectedChat WRITE setSelectedChat NOTIFY selectedChatChanged);
+
 public:
     explicit Client(QHostAddress ip, quint16 port, bool pingMode, QObject *parent = nullptr);
     void addChat(const ChatKey &key)
@@ -78,8 +81,15 @@ public:
     QString getNickname() const;
     int getPort() const;
     QString getIp() const;
-    auto getChatPreviewListModel() { return chatPreviewListModel; };
+    auto getChatPreviewListModel() { return chatPreviewListModel.get(); };
+    int selectedChat() const { return selectedChatIndex; };
+    void setSelectedChat(int selectedChat)
+    {
+        selectedChatIndex = selectedChat;
+        emit selectedChatChanged(selectedChat);
+    };
 signals:
+    void selectedChatChanged(int selectedChat);
     void chatPreviewListChanged();
 
 private slots:
@@ -97,7 +107,8 @@ private:
     QString nickname;
     QString remoteIpString;
     quint16 remotePort;
-    ChatPreviewListModel *chatPreviewListModel;
+    std::unique_ptr<ChatPreviewListModel> chatPreviewListModel;
+    int selectedChatIndex = -1;
 };
 
 #endif

@@ -16,6 +16,8 @@ public:
     };
     ParticipantKey getKey() const { return key; }
 
+    QString getNickname() const { return name; }
+
     void setNickname(QString name) { name = name; }
     void setEntryDate(QDateTime entryDate)
     {

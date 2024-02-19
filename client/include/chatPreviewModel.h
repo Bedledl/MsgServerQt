@@ -5,7 +5,7 @@
 #include <QModelIndex>
 #include <QObject>
 
-#include "chat.h"
+#include "chatViewModel.h"
 
 // TODO enhancement sorting with https://doc.qt.io/qt-6/qsortfilterproxymodel.html
 // currently just show chats
@@ -17,6 +17,7 @@ class ChatPreviewModel : public QObject
     Q_PROPERTY(QString lastMessageText READ lastMessage CONSTANT);
     Q_PROPERTY(QDateTime lastMessageTimestamp READ lastMessageTimestamp CONSTANT);
     Q_PROPERTY(QString chatName READ chatName CONSTANT);
+    Q_PROPERTY(uint chatKey READ getChatKey CONSTANT);
 
 public:
     ChatPreviewModel(Chat *chat, QObject *parent = nullptr) : QObject(parent), chat(chat)
@@ -32,6 +33,7 @@ private:
     QString chatName() const;
     QString lastMessage() const;
     QDateTime lastMessageTimestamp() const;
+    uint getChatKey() const;
 
     friend class ChatPreviewListModel;
 };
@@ -39,7 +41,6 @@ private:
 class ChatPreviewListModel : public QAbstractListModel
 {
     Q_OBJECT
-    Q_PROPERTY(int selectedChat READ selectedChat WRITE setSelectedChat NOTIFY selectedChatChanged);
 public:
     void addChat(Chat *chat);
     void removeChat(Chat *chat);
@@ -47,18 +48,8 @@ public:
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
 
-    int selectedChat() const { return selectedChatIndex; };
-    void setSelectedChat(int selectedChat)
-    {
-        selectedChatIndex = selectedChat;
-        emit selectedChatChanged(selectedChat);
-    };
-signals:
-    void selectedChatChanged(int selectedChat);
-
 private:
     QList<ChatPreviewModel *> chatsPreviews = QList<ChatPreviewModel *>();
-    int selectedChatIndex = -1;
 };
 
 #endif /* A81E4559_7B19_43E2_AD18_B06CF2B4A3EE */
