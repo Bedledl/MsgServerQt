@@ -1,0 +1,9 @@
+#ifndef F01B6FBD_7838_45ED_B1E9_E721550C395D
+#define F01B6FBD_7838_45ED_B1E9_E721550C395D
+#include "chat.h"
+
+class ChatViewModel : Chat {
+    
+}
+
+#endif /* F01B6FBD_7838_45ED_B1E9_E721550C395D */
