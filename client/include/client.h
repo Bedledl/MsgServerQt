@@ -4,6 +4,7 @@
 #include <QAbstractSocket>
 #include <QMap>
 #include <QObject>
+#include <memory>
 
 #include "chat.h"
 #include "clientIface.h"
@@ -23,6 +24,8 @@ class Client : public QObject, public ClientIface
     Q_PROPERTY(int port READ getPort CONSTANT)
     Q_PROPERTY(QString ip READ getIp CONSTANT)
     Q_PROPERTY(ChatPreviewListModel *CPLmodel READ getChatPreviewListModel CONSTANT)
+    Q_PROPERTY(int selectedChat READ selectedChat WRITE setSelectedChat NOTIFY selectedChatChanged);
+
 public:
     explicit Client(QHostAddress ip, quint16 port, QString nickname, bool pingMode, QObject *parent = nullptr);
     void addNewChat(const ChatKey &key) override;
@@ -38,8 +41,15 @@ public:
     bool participantIsRegistered(const ParticipantKey &key) const override;
     int getPort() const;
     QString getIp() const;
-    auto getChatPreviewListModel() { return chatPreviewListModel; };
+    auto getChatPreviewListModel() { return chatPreviewListModel.get(); };
+    int selectedChat() const { return selectedChatIndex; };
+    void setSelectedChat(int selectedChat)
+    {
+        selectedChatIndex = selectedChat;
+        emit selectedChatChanged(selectedChat);
+    };
 signals:
+    void selectedChatChanged(int selectedChat);
     void chatPreviewListChanged();
 
 private slots:
@@ -57,7 +67,8 @@ private:
     QMap<ParticipantKey, std::shared_ptr<Participant>> registeredParticipants;
     QString remoteIpString;
     quint16 remotePort;
-    ChatPreviewListModel *chatPreviewListModel;
+    std::unique_ptr<ChatPreviewListModel> chatPreviewListModel;
+    int selectedChatIndex = -1;
 };
 
 #endif

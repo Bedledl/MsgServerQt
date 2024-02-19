@@ -19,8 +19,6 @@ Window {
 
     property bool chatVisible: false
 
-
-
     ColumnLayout {
         anchors.fill: parent
         anchors.topMargin: 10; anchors.leftMargin: 10; anchors.rightMargin: 10

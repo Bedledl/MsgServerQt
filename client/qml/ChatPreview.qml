@@ -56,7 +56,7 @@ Rectangle {
         hoverEnabled: true
         onDoubleClicked:  {
             console.log(index)
-            clientCppObj.CPLmodel.selectedChat = index
+            clientCppObj.selectedChat = model.display.chatKey
             clientWindow.chatVisible=true
         }
         id: chatPreviewClickingArea

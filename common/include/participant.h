@@ -36,6 +36,8 @@ public:
     QString getNickname() const { return name; }
     QDateTime getEntryDate() const { return registeredSince; }
 
+    QString getNickname() const { return name; }
+
     void setNickname(QString name) { name = name; }
     void setEntryDate(QDateTime entryDate)
     {
