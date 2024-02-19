@@ -2,6 +2,7 @@ add_library(Client STATIC
 ${CMAKE_CURRENT_SOURCE_DIR}/communicators.cpp
 ${CMAKE_CURRENT_SOURCE_DIR}/client.cpp
 ${CMAKE_CURRENT_SOURCE_DIR}/clientApp.cpp
+${CMAKE_CURRENT_SOURCE_DIR}/chatPreviewModel.cpp
 )
 
 target_include_directories(Client PUBLIC

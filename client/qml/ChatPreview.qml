@@ -4,12 +4,13 @@ import QtQuick.Layouts
 import common.qml
 
 Rectangle {
-    id: rect
+    id: chatPreviewRect
     width: parent ? parent.width : 0
     height: chatPreviewColumnLayout.height + 12
     clip: true
     color: chatPreviewClickingArea.containsMouse ? Constants.secondColor : Constants.mainColor
 
+    // TODO borders instead of  second rectangle ?
     Rectangle {
         anchors.fill: parent
         anchors.margins: 2
@@ -25,22 +26,23 @@ Rectangle {
 
                 Text {
                     id: chatIdentification
-                    text: "Chat" + index
-                    color: Constants.mainColor
+                    text: model.display.chatName
+                    color: chatPreviewRect.color
                     font.pointSize: 12
                     textFormat: Text.PlainText
                 }
                 GradientText {
                     id: lastMessage
-                    text: "Hey, good to hear from you!jasklfjksljfksaldfjkfdljdafkjjklkjkl"
+                    text: model.display.lastMessageText
                     fontSize: 12
                     maxWidth: parent.width
+                    //color: chatPreviewRect.color TODO
                 }
 
                 Text {
                     id: lastMessageDateString
-                    text: "Today, 7:34pm"
-                    color: Constants.mainColor
+                    text: model.display.lastMessageTimestamp.toDateString()
+                    color: chatPreviewRect.color
                     font.pointSize: 8
                     textFormat: Text.PlainText
                 }
@@ -53,6 +55,8 @@ Rectangle {
         anchors.fill: parent
         hoverEnabled: true
         onDoubleClicked:  {
+            console.log(index)
+            clientCppObj.CPLmodel.selectedChat = index
             clientWindow.chatVisible=true
         }
         id: chatPreviewClickingArea

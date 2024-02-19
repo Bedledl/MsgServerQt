@@ -28,14 +28,14 @@ Window {
         spacing: 2
         Label {
             Layout.alignment: Qt.AlignHCenter
-            text: "Hello User" //TODO fill with real name
+            text: "Hello " + clientCppObj.nickname
             color: Constants.secondColor
             font.pixelSize: 12
         }
 
         Label {
             Layout.alignment: Qt.AlignHCenter
-            text: "Connected to server at IP <b>foobar</b> on port <b>666</b>"
+            text: "Connected to server at IP <b>"+ clientCppObj.ip +"</b> on port <b>" + clientCppObj.port + "</b>"
             color: Constants.mainColor
             font.pixelSize: 10
         }

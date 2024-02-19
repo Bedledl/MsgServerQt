@@ -16,6 +16,7 @@ QString ClientCommunicator::answerMessage(QString msg)
     {
     case ServerCommandId::ServerGenericResponse:
     {
+        qDebug() << "ServerGenericResponse";
         // TODO
         ;
         break;
@@ -27,11 +28,13 @@ QString ClientCommunicator::answerMessage(QString msg)
         {
         case ServerChatCommandId::AddedToChat:
         {
+            qDebug() << "AddedToChat";
             client->addChat(chatCmd.chatkey());
             break;
         }
         case ServerChatCommandId::LeftChat:
         {
+            qDebug() << "LeftChat";
             client->leaveChat(chatCmd.chatkey());
             break;
         }
@@ -95,7 +98,7 @@ QString ClientCommunicator::welcomeMessage()
     ccc.set_cmd(ClientCommandId::SetNickname);
 
     auto name = new Name();
-    name->set_name("Erika Musterfrau"); //TODO
+    name->set_name("Erika Musterfrau"); // TODO
     name->set_namelength(17);
 
     auto data = new Data();

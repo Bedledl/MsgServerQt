@@ -1,11 +1,14 @@
 #ifndef CLIENT_H
 #define CLIENT_H
 
+#include <QAbstractListModel>
 #include <QAbstractSocket>
 #include <QMap>
 #include <QObject>
+#include <qqml.h>
 
 #include "chat.h"
+#include "chatPreviewModel.h"
 #include "participant.h"
 
 class Communicator;
@@ -26,13 +29,29 @@ class ClientFailedToConnect : public std::exception
 class Client : public QObject
 {
     Q_OBJECT
+    Q_PROPERTY(QString nickname READ getNickname CONSTANT)
+    Q_PROPERTY(int port READ getPort CONSTANT)
+    Q_PROPERTY(QString ip READ getIp CONSTANT)
+    Q_PROPERTY(ChatPreviewListModel *CPLmodel READ getChatPreviewListModel CONSTANT)
 public:
     explicit Client(QHostAddress ip, quint16 port, bool pingMode, QObject *parent = nullptr);
-    void addChat(const ChatKey &key) { chats.insert(key, new Chat(key, this)); }
+    void addChat(const ChatKey &key)
+    {
+        qDebug() << "Client::addChat";
+        if (chats.contains(key))
+        {
+            qDebug() << "Chat already exists";
+            return;
+        }
+        auto newChat = new Chat(key, this);
+        chats.insert(key, newChat);
+        chatPreviewListModel->addChat(newChat);
+    }
     void leaveChat(const ChatKey &key)
     {
         auto chat = chats.take(key);
         delete chat;
+        // TODO
     }
     void addNewMessage(const ChatKey &key, QString content, uint8_t participantKey, QDateTime timestamp)
     {
@@ -56,6 +75,12 @@ public:
             search->setEntryDate(entryDate);
         }
     }
+    QString getNickname() const;
+    int getPort() const;
+    QString getIp() const;
+    auto getChatPreviewListModel() { return chatPreviewListModel; };
+signals:
+    void chatPreviewListChanged();
 
 private slots:
     void readFromSocketAndAswer();
@@ -69,6 +94,10 @@ private:
     Communicator *communicator;
     QMap<ChatKey, Chat *> chats;
     QMap<ParticipantKey, Participant> otherParticipants;
+    QString nickname;
+    QString remoteIpString;
+    quint16 remotePort;
+    ChatPreviewListModel *chatPreviewListModel;
 };
 
 #endif

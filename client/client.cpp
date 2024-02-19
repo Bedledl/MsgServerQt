@@ -1,4 +1,5 @@
 #include "include/client.h"
+#include "include/chatPreviewModel.h"
 #include "include/communicators.h"
 
 #include <QDebug>
@@ -6,6 +7,7 @@
 #include <QObject>
 #include <QString>
 #include <QTcpSocket>
+#include <qqml.h>
 
 #include <iostream>
 
@@ -43,6 +45,10 @@ Client::Client(QHostAddress ip, quint16 port, bool pingMode, QObject *parent)
     std::cout << "Write welcome Message:"
               << "\n";
     out << communicator->welcomeMessage();
+    nickname = "Juliet";
+    remoteIpString = ip.toString();
+    remotePort = port;
+    chatPreviewListModel = new ChatPreviewListModel(&chats, this);
 }
 
 void Client::readFromSocketAndAswer()
@@ -67,8 +73,13 @@ void Client::readFromSocketAndAswer()
     qDebug() << msg;
 
     auto answer = communicator->answerMessage(msg);
+    std::cout << "Answer: " << answer.toStdString() << std::endl;
 
     out << answer;
     auto written = tcpSocket->write(block);
     std::cout << "wrote Ping to socket" << written << std::endl;
 }
+
+inline QString Client::getNickname() const { return nickname; }
+inline int Client::getPort() const { return remotePort; }
+inline QString Client::getIp() const { return remoteIpString; }

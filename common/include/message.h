@@ -5,13 +5,14 @@
 #include <compare>
 #include <string>
 
+/// @brief  forward declaration of Participant
+class Participant;
+
 class Message
 {
-    std::chrono::time_point<std::chrono::system_clock> date;
-    QString content;
 
 public:
-    Message(QString content) : date(std::chrono::system_clock::now()), content(content){};
+    Message(QString content, Participant *sender) : date(std::chrono::system_clock::now()), content(content), sender(sender){};
     std::strong_ordering operator<=>(const Message &msg) const
     {
         if (date == msg.date)
@@ -29,6 +30,10 @@ public:
         }
         return date <=> msg.date;
     };
+    QString getContent() const
+    {
+        return content;
+    }
     QString toString() const
     {
         std::time_t date_c = std::chrono::system_clock::to_time_t(date);
@@ -47,6 +52,15 @@ public:
 
         return date_str + QString(": ") + content;
     }
+    Participant *getSender() const
+    {
+        return sender;
+    }
+
+private:
+    Participant *sender;
+    std::chrono::time_point<std::chrono::system_clock> date;
+    QString content;
 };
 
 #endif

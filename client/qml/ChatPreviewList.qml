@@ -7,7 +7,7 @@ ListView {
     Layout.fillWidth: true
     Layout.fillHeight: true
     clip: true
-    model: 20
+    model: clientCppObj.CPLmodel
     delegate: ChatPreview {}
     focus: true
     spacing: 2

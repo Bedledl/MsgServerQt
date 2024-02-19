@@ -1,7 +1,7 @@
 import QtQuick 2.15
 import common.qml
 Item {
-    property string text: "Example Text, This is an exampleshgjsdfhgkdfjhgjkgh"
+    required property string text
     property int fontSize: 12
     property int maxWidth: 200
     Rectangle {
