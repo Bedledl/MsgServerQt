@@ -27,15 +27,12 @@ public:
 class Participant
 {
 public:
-    Participant(const ParticipantKey key) : key(key)
-    {
-        name = "Unknown";
-        registeredSince = QDateTime::currentDateTime();
-    };
+    Participant(const ParticipantKey key,
+                QString name = "Unknown",
+                QDateTime registeredSince = QDateTime::currentDateTime()) : key(key), name(name), registeredSince(registeredSince){};
     ParticipantKey getKey() const { return key; }
     QString getNickname() const { return name; }
     QDateTime getEntryDate() const { return registeredSince; }
-
     QString getNickname() const { return name; }
 
     void setNickname(QString name) { name = name; }
