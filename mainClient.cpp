@@ -8,7 +8,6 @@
 #include <QQmlContext>
 
 #include "client.h"
-#include "clientApp.h"
 
 int main(int argc, char *argv[])
 {
