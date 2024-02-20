@@ -5,41 +5,75 @@
 
 #include "moc_chat.cpp"
 
-void Chat::add_message(Message msg)
-{
-    messages.emplace(msg);
-    emit messagesChanged();
-}
-
 void Chat::foreach_do(std::function<void(const Message &)> func)
 {
+    mutex.lockForRead();
     std::for_each(messages.begin(), messages.end(), func);
+    mutex.unlock();
 }
 
-void Chat::addMessage(QString content, std::shared_ptr<Participant> sender, QDateTime timestamp)
+void Chat::addMessage(Message msg)
 {
-    sender;
-    timestamp;
-    // TODO
-    qDebug() << "Chat: add Message ";
-    throw std::runtime_error("Not implemented");
-    add_message(Message(content));
+    mutex.lockForRead();
+    auto sender = msg.getSender();
+    if (!participants.contains(sender))
+    {
+        mutex.unlock();
+        throw SenderNotChatParticipant();
+    }
+
+    if (messages.contains(msg))
+    {
+        mutex.unlock();
+        return;
+    }
+
+    bool messageWasAppended = false;
+    if (messages.size() == 0 || msg > getLastMessage())
+    {
+        messageWasAppended = true;
+    }
+
+    mutex.unlock();
+
+    mutex.lockForWrite();
+    messages.emplace(msg);
+    mutex.unlock();
+    if (messageWasAppended)
+    {
+        emit messageAppended();
+    }
+    else
+    {
+        emit messageOrderInvalidated();
+    }
 }
+void Chat::addMessage(QString content, std::shared_ptr<Participant> sender, QDateTime timestamp = QDateTime::currentDateTime())
+{
+    addMessage(Message(content, sender, timestamp));
+}
+
 void Chat::addParticipant(std::shared_ptr<Participant> participant)
 {
+    mutex.lockForWrite();
     if (std::find(participants.begin(), participants.end(), participant) != participants.end())
     {
+        mutex.unlock();
         throw ParticipantAlreadyExists();
     }
     participants.emplace_back(std::move(participant));
+    mutex.unlock();
 };
 void Chat::removeParticipant(std::shared_ptr<Participant> participant)
 {
+    mutex.lockForWrite();
     auto countErased = std::erase(participants, participant);
     if (countErased == 0)
     {
+        mutex.unlock();
         throw ParticipantNotFound();
     }
+    mutex.unlock();
 };
 void Chat::removeParticipant(ParticipantKey participantKey)
 {
@@ -59,15 +93,31 @@ std::vector<ParticipantKey> Chat::getParticipantKeys()
     return keys;
 }
 
-const Message *Chat::get_last_message() const
+const Message &Chat::getLastMessage() const
 {
+    mutex.lockForRead();
     qDebug() << "Chat::get_last_message()";
     if (messages.empty())
     {
-        qDebug() << "Chat::get_last_message() empty";
-        return nullptr;
+        mutex.unlock();
+        throw std::out_of_range("No messages in chat.");
     }
-    qDebug() << "Chat::get_last_message() not empty";
-    return &(*messages.begin());
+    mutex.unlock();
+    return getMessageAt(messages.size() - 1);
+}
+
+const Message &Chat::getMessageAt(size_t index) const
+{
+    mutex.lockForRead();
+    if (index < 0 || index >= messages.size())
+    {
+        mutex.unlock();
+        std::stringstream ss;
+        ss << "Message index " << index << " out of bounds.";
+        throw std::out_of_range(ss.str());
+    }
+    auto &r = *std::next(messages.begin(), index);
+    mutex.unlock();
+    return r;
 }
 
