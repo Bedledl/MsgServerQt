@@ -1,14 +1,17 @@
+#include <chrono>
+
 #include <QDateTime>
 #include <QString>
 
 #include "message.h"
 #include "participant.h"
 
-Message::Message(QString content, Participant *sender) : date(std::chrono::system_clock::now()), content(content), sender(sender){};
+Message::Message(QString content, std::shared_ptr<Participant> sender, QDateTime sentDateTime)
+    : sentDateTime(sentDateTime), content(content), sender(sender){};
 
 std::strong_ordering Message::operator<=>(const Message &msg) const
 {
-    if (date == msg.date)
+    if (sentDateTime == msg.sentDateTime)
     {
         auto string_compare = QString::compare(content, msg.content, Qt::CaseSensitive);
         if (string_compare == 0)
@@ -21,7 +24,11 @@ std::strong_ordering Message::operator<=>(const Message &msg) const
         }
         return std::strong_ordering::greater;
     }
-    return date <=> msg.date;
+    else if (sentDateTime < msg.sentDateTime)
+    {
+        return std::strong_ordering::less;
+    }
+    return std::strong_ordering::greater;
 };
 QString Message::getContent() const
 {
@@ -29,39 +36,22 @@ QString Message::getContent() const
 }
 QString Message::toString() const
 {
-    std::time_t date_c = std::chrono::system_clock::to_time_t(date);
-    std::tm date_tm = *std::localtime(&date_c);
-
-    char buff[10];
-    QString date_str;
-    if (!strftime(buff, sizeof buff, "%d:%m:%y", &date_tm))
-    {
-        date_str = QString("Unknown date");
-    }
-    else
-    {
-        date_str = QString(buff);
-    }
-
-    return date_str + QString(": ") + content;
+    QString senderName = getSenderString();
+    return sentDateTime.toString("dd.MM.yyyy hh:mm") + " " + senderName + ": " + content;
 }
-Participant const *Message::getSender() const
+std::shared_ptr<Participant> Message::getSender() const
 {
     return sender;
 }
-std::chrono::time_point<std::chrono::system_clock> Message::getTimestamp() const
+std::chrono::system_clock::time_point Message::getTimestamp() const
 {
-    return date;
+    return std::chrono::system_clock::time_point(std::chrono::milliseconds(sentDateTime.toMSecsSinceEpoch()));
 }
 QDateTime Message::getQTimestamp() const
 {
-    return QDateTime::fromSecsSinceEpoch(std::chrono::system_clock::to_time_t(date));
+    return sentDateTime;
 }
 QString Message::getSenderString() const
 {
-    if (sender == nullptr)
-    {
-        return QString("Unknown");
-    }
     return sender->getNickname();
 }
