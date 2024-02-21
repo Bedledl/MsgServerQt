@@ -6,9 +6,8 @@
 #include <QObject>
 
 #include "chat.h"
+#include "communicator.h"
 #include "participant.h"
-
-class Communicator;
 
 QT_BEGIN_NAMESPACE
 class QLabel;
@@ -17,9 +16,37 @@ QT_END_NAMESPACE
 
 class ClientFailedToConnect : public std::exception
 {
+public:
     virtual const char *what() const throw()
     {
         return "Failed to connect.";
+    }
+};
+
+class ParticipantNotFound : public std::exception
+{
+public:
+    virtual const char *what() const throw()
+    {
+        return "Participant not found.";
+    }
+};
+
+class ChatNotFound : public std::exception
+{
+public:
+    virtual const char *what() const throw()
+    {
+        return "Chat not found.";
+    }
+};
+
+class ChatAlreadyExists : public std::exception
+{
+public:
+    virtual const char *what() const throw()
+    {
+        return "Chat already exists.";
     }
 };
 
@@ -28,32 +55,53 @@ class Client : public QObject
     Q_OBJECT
 public:
     explicit Client(QHostAddress ip, quint16 port, bool pingMode, QObject *parent = nullptr);
-    void addChat(const ChatKey &key) { chats.insert(key, new Chat(key, this)); }
+    void addNewChat(const ChatKey &key)
+    {
+        if (chats.contains(key))
+        {
+            return;
+        }
+        auto newChat = new Chat(key, this);
+        chats.insert(key, newChat);
+    }
     void leaveChat(const ChatKey &key)
     {
-        auto chat = chats.take(key);
-        delete chat;
-    }
-    void addNewMessage(const ChatKey &key, QString content, uint8_t participantKey, QDateTime timestamp)
-    {
-        if (auto search = chats.find(key); search != chats.end())
+        auto countDeleted = chats.remove(key);
+        if (countDeleted == 0)
         {
-            auto chat_ptr = *search;
-            chat_ptr->addMessage(content, participantKey, timestamp);
+            throw ChatNotFound();
+        }
+    }
+    void addNewIncomingMessage(const ChatKey &key, QString content, ParticipantKey participantKey, QDateTime timestamp)
+    {
+        if (auto searchChat = chats.find(key); searchChat != chats.end())
+        {
+            if (auto searchParticipant = registeredParticipants.find(participantKey); searchParticipant != registeredParticipants.end())
+            {
+                (*searchChat)->addMessage(std::move(content), *searchParticipant, std::move(timestamp));
+            }
+            else
+            {
+                throw ParticipantNotFound();
+            }
+        }
+        else
+        {
+            throw ChatNotFound();
         }
     }
     void assignParticipantName(const ParticipantKey &key, QString name)
     {
-        if (auto search = otherParticipants.find(key); search != otherParticipants.end())
+        if (auto search = registeredParticipants.find(key); search != registeredParticipants.end())
         {
-            search->setNickname(name);
+            (*search)->setNickname(name);
         }
     }
     void assignParticipantEntryDate(const ParticipantKey &key, QDateTime entryDate)
     {
-        if (auto search = otherParticipants.find(key); search != otherParticipants.end())
+        if (auto search = registeredParticipants.find(key); search != registeredParticipants.end())
         {
-            search->setEntryDate(entryDate);
+            (*search)->setEntryDate(std::move(entryDate));
         }
     }
 
@@ -68,7 +116,7 @@ private:
     QDataStream out{&block, QIODevice::WriteOnly};
     Communicator *communicator;
     QMap<ChatKey, Chat *> chats;
-    QMap<ParticipantKey, Participant> otherParticipants;
+    QMap<ParticipantKey, std::shared_ptr<Participant>> registeredParticipants;
 };
 
 #endif
