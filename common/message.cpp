@@ -13,16 +13,23 @@ std::strong_ordering Message::operator<=>(const Message &msg) const
 {
     if (sentDateTime == msg.sentDateTime)
     {
-        auto string_compare = QString::compare(content, msg.content, Qt::CaseSensitive);
-        if (string_compare == 0)
+        if (sender == msg.sender)
         {
-            return std::strong_ordering::equal;
+            auto string_compare = QString::compare(content, msg.content, Qt::CaseSensitive);
+            if (string_compare == 0)
+            {
+                return std::strong_ordering::equal;
+            }
+            else if (string_compare < 0)
+            {
+                return std::strong_ordering::less;
+            }
+            return std::strong_ordering::greater;
         }
-        else if (string_compare < 0)
+        else
         {
-            return std::strong_ordering::less;
+            return sender <=> msg.sender;
         }
-        return std::strong_ordering::greater;
     }
     else if (sentDateTime < msg.sentDateTime)
     {
