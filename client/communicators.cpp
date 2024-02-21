@@ -28,7 +28,7 @@ QString ClientCommunicator::answerMessage(QString msg)
         case ServerChatCommandId::AddedToChat:
         {
             try{
-                client->addNewChat(chatCmd.chatkey());
+                client.addNewChat(chatCmd.chatkey());
             }
             catch (ChatAlreadyExists &e){
                 qDebug() << e.what();
@@ -37,7 +37,7 @@ QString ClientCommunicator::answerMessage(QString msg)
         }
         case ServerChatCommandId::LeftChat:
         {
-            client->leaveChat(chatCmd.chatkey());
+            client.leaveChat(chatCmd.chatkey());
             break;
         }
         case ServerChatCommandId::ServerNewMessage:
@@ -49,7 +49,7 @@ QString ClientCommunicator::answerMessage(QString msg)
 
             std::chrono::milliseconds ms = std::chrono::milliseconds(google::protobuf::util::TimeUtil::TimestampToMilliseconds(timestamp));
             QDateTime datetime;
-            client->addNewIncomingMessage(chatCmd.chatkey(), QString(content.c_str()), participantKey, datetime.addDuration(ms));
+            client.addNewIncomingMessage(chatCmd.chatkey(), QString(content.c_str()), participantKey, datetime.addDuration(ms));
             break;
         }
         default:
@@ -69,13 +69,13 @@ QString ClientCommunicator::answerMessage(QString msg)
 
             std::chrono::milliseconds ms = std::chrono::milliseconds(google::protobuf::util::TimeUtil::TimestampToMilliseconds(entryDate));
             QDateTime datetime;
-            client->assignParticipantEntryDate(key, datetime.addDuration(ms));
+            client.assignParticipantEntryDate(key, datetime.addDuration(ms));
             break;
         }
         case ServerParticipantCommandId::SendName:
         {
             auto name = serverParticipantCommand.data().name().name();
-            client->assignParticipantName(key, QString(name.c_str()));
+            client.assignParticipantName(key, QString(name.c_str()));
             break;
         }
         default:
