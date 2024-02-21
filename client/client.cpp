@@ -18,11 +18,11 @@ Client::Client(QHostAddress ip, quint16 port, bool pingMode, QObject *parent)
 
     if (pingMode)
     {
-        communicator = new PingPongCommunicator();
+        communicator = std::make_unique<PingPongCommunicator>();
     }
     else
     {
-        communicator = new ClientCommunicator(this);
+        communicator = std::make_unique<ClientCommunicator>(*this);
     }
     tcpSocket->connectToHost(ip, port);
     in.setDevice(tcpSocket);
