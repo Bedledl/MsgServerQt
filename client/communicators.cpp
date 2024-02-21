@@ -8,7 +8,8 @@
 #include "communicators.h"
 #include "serverMsgFormats.pb.h"
 
-QString ClientCommunicator::answerMessage(QString msg)
+template <>
+QString ClientCommunicator<Client>::answerMessage(QString msg)
 {
     ServerCommand incomingCmd;
     incomingCmd.ParseFromString(msg.toStdString());
@@ -96,7 +97,8 @@ QString ClientCommunicator::answerMessage(QString msg)
     return QString(getMalformedPackageError().c_str());
 };
 
-QString ClientCommunicator::welcomeMessage()
+template<>
+QString ClientCommunicator<Client>::welcomeMessage()
 {
     std::cout << "welcome Message\n";
     ClientCommand ccc;

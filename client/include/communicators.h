@@ -7,12 +7,11 @@
 #include <QDate>
 #include <QString>
 
-class Client;
-
+template <typename ClientClass>
 class ClientCommunicator : public Communicator
 {
 public:
-    ClientCommunicator(Client &client) : client(client)
+    ClientCommunicator(ClientClass &client) : client(client)
     {
         std::cout << "Client Communicator Initialisation\n";
     }
@@ -31,7 +30,7 @@ private:
         return serverCmd.SerializeAsString();
     }
 
-    Client &client;
+    ClientClass &client;
 };
 
 #endif

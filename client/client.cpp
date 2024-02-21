@@ -25,7 +25,7 @@ Client::Client(QHostAddress ip, quint16 port, bool pingMode, QObject *parent)
     }
     else
     {
-        communicator = std::make_unique<ClientCommunicator>(*this);
+        communicator = std::make_unique<ClientCommunicator<Client>>(*this);
     }
 
     std::cout << "connectToHost\n";
