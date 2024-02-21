@@ -32,6 +32,7 @@ QString ClientCommunicator::answerMessage(QString msg)
             }
             catch (ChatAlreadyExists &e){
                 qDebug() << e.what();
+                return QString(generateGenericResponseString(ResponseCode::ERROR).c_str());
             }
             break;
         }
@@ -53,7 +54,7 @@ QString ClientCommunicator::answerMessage(QString msg)
             break;
         }
         default:
-            return QString(getMalformedPackageError().c_str());
+            return QString(generateGenericResponseString(ResponseCode::MALFORMED_MESSAGE).c_str());
         }
         break;
     }
@@ -80,17 +81,17 @@ QString ClientCommunicator::answerMessage(QString msg)
         }
         default:
         {
-            return QString(getMalformedPackageError().c_str());
+            return QString(generateGenericResponseString(ResponseCode::MALFORMED_MESSAGE).c_str());
         }
         }
         break;
     }
     default:
     {
-        return QString(getMalformedPackageError().c_str());
+        return QString(generateGenericResponseString(ResponseCode::MALFORMED_MESSAGE).c_str());
     }
     }
-    return QString(getMalformedPackageError().c_str());
+    return QString(generateGenericResponseString(ResponseCode::MALFORMED_MESSAGE).c_str());
 };
 
 QString ClientCommunicator::welcomeMessage()

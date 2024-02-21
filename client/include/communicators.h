@@ -18,12 +18,12 @@ public:
     QString welcomeMessage() override;
 
 private:
-    std::string getMalformedPackageError()
+    std::string generateGenericResponseString(ResponseCode response)
     {
         ClientCommand serverCmd;
         serverCmd.set_cmd(ClientCommandId::ClientGenericResponse);
         auto data = new Data();
-        data->set_response(ResponseCode::MALFORMED_MESSAGE);
+        data->set_response(response);
         serverCmd.set_allocated_data(data);
         return serverCmd.SerializeAsString();
     }
