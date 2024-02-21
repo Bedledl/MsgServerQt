@@ -3,13 +3,15 @@
 #include "chat.h"
 #include <QAbstractListModel>
 
-class ChatViewModel : public Chat, public virtual QAbstractListModel
+class ChatViewModel : public QAbstractListModel
 {
     Q_OBJECT
 public:
-    ChatViewModel(ChatKey key, QObject *parent = nullptr) : Chat(key, parent), QAbstractListModel(parent) {};
+    ChatViewModel(Chat &chat, QObject *parent = nullptr) : QAbstractListModel(parent), chat(chat) {};
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
+private:
+    Chat &chat;
 };
 
 #endif /* F01B6FBD_7838_45ED_B1E9_E721550C395D */
