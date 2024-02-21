@@ -138,7 +138,7 @@ private:
     QDataStream in;
     QByteArray block;
     QDataStream out{&block, QIODevice::WriteOnly};
-    Communicator *communicator;
+    std::unique_ptr<Communicator> communicator;
     QMap<ChatKey, Chat *> chats;
     QMap<ParticipantKey, std::shared_ptr<Participant>> registeredParticipants;
     QString nickname;
