@@ -1,5 +1,7 @@
 #include <QDateTime>
 
+#include <stdexcept>
+
 #include "chat.h"
 #include "chatPreviewModel.h"
 #include <iostream>
@@ -10,28 +12,29 @@ QString ChatPreviewModel::chatName() const
 {
     qDebug() << "ChatPreviewModel::chatName()";
     return "chatName";
-};
+}
 QString ChatPreviewModel::lastMessage() const
 {
     qDebug() << "ChatPreviewModel::lastMessage()";
-    auto lastMsg = chat->get_last_message();
-    if (lastMsg == nullptr)
-    {
+    try {
+        auto lastMsg = chat->getLastMessage();
+        return lastMsg.getContent();
+    }
+    catch(const std::out_of_range&) {
         return "No messages yet.";
     }
-    return lastMsg->getContent();
-};
+}
 QDateTime ChatPreviewModel::lastMessageTimestamp() const
 {
     qDebug() << "ChatPreviewModel::lastMessageTimestamp()";
     return QDateTime::currentDateTime();
-};
+}
 
 uint ChatPreviewModel::getChatKey() const
 {
     qDebug() << "ChatPreviewListModel::chatKey()";
     return chat->getKey();
-};
+}
 
 // and now implementations for the preview list
 
@@ -68,6 +71,7 @@ int ChatPreviewListModel::rowCount(const QModelIndex &parent) const
         qDebug() << "ChatPreviewListModel::rowCount()" << chatsPreviews.count();
         return chatsPreviews.count();
     }
+    return 0;
 };
 
 QVariant ChatPreviewListModel::data(const QModelIndex &index, int role) const
