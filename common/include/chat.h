@@ -12,7 +12,7 @@
 
 class Participant;
 
-typedef uint8_t ChatKey;
+typedef unsigned ChatKey;
 
 class Chat : public QObject
 {
