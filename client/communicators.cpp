@@ -29,7 +29,12 @@ QString ClientCommunicator::answerMessage(QString msg)
         case ServerChatCommandId::AddedToChat:
         {
             qDebug() << "AddedToChat";
-            client->addChat(chatCmd.chatkey());
+            try{
+                client->addNewChat(chatCmd.chatkey());
+            }
+            catch (ChatAlreadyExists &e){
+                qDebug() << e.what();
+            }
             break;
         }
         case ServerChatCommandId::LeftChat:
@@ -47,7 +52,7 @@ QString ClientCommunicator::answerMessage(QString msg)
 
             std::chrono::milliseconds ms = std::chrono::milliseconds(google::protobuf::util::TimeUtil::TimestampToMilliseconds(timestamp));
             QDateTime datetime;
-            client->addNewMessage(chatCmd.chatkey(), QString(content.c_str()), participantKey, datetime.addDuration(ms));
+            client->addNewIncomingMessage(chatCmd.chatkey(), QString(content.c_str()), participantKey, datetime.addDuration(ms));
             break;
         }
         default:
