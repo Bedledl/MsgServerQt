@@ -12,7 +12,7 @@ class Client;
 class ClientCommunicator : public Communicator
 {
 public:
-    ClientCommunicator(Client *client) : client(client)
+    ClientCommunicator(Client &client) : client(client)
     {
         std::cout << "Client Communicator Initialisation\n";
     }
@@ -30,7 +30,8 @@ private:
         serverCmd.set_allocated_data(data);
         return serverCmd.SerializeAsString();
     }
-    Client *const client;
+
+    Client &client;
 };
 
 #endif
