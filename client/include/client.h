@@ -54,7 +54,7 @@ class Client : public QObject
 {
     Q_OBJECT
 public:
-    explicit Client(QHostAddress ip, quint16 port, bool pingMode, QObject *parent = nullptr);
+    explicit Client(QHostAddress ip, quint16 port, QString nickname, bool pingMode, QObject *parent = nullptr);
     void addNewChat(const ChatKey &key)
     {
         if (chats.contains(key))
@@ -104,11 +104,13 @@ public:
             (*search)->setEntryDate(std::move(entryDate));
         }
     }
+    QString getNickname() const { return nickname; }
 
 private slots:
     void readFromSocketAndAswer();
 
 private:
+    QString nickname;
     QLabel *statusLabel = nullptr;
     QTcpSocket *tcpSocket = nullptr;
     QDataStream in;

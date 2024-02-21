@@ -11,8 +11,8 @@
 
 #include "moc_client.cpp"
 
-Client::Client(QHostAddress ip, quint16 port, bool pingMode, QObject *parent)
-    : QObject(parent), tcpSocket(new QTcpSocket(this))
+Client::Client(QHostAddress ip, quint16 port, QString nickname, bool pingMode, QObject *parent)
+    : QObject(parent), tcpSocket(new QTcpSocket(this)), nickname(nickname)
 {
     std::cout << "client constrctor" << std::endl;
 

@@ -28,7 +28,7 @@ int main(int argc, char *argv[])
 
     try
     {
-        clientApp = std::make_unique<ClientApp>(std::make_unique<Client>(QHostAddress(ip), port, usePingCommunicator));
+        clientApp = std::make_unique<ClientApp>(std::make_unique<Client>(QHostAddress(ip), port, "Juliet", usePingCommunicator));
     }
     catch (ClientFailedToConnect &exc)
     {
