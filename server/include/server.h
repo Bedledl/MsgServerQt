@@ -2,6 +2,7 @@
 #define SERVER_H
 #include "chat.h"
 #include "clientThreadWorker.h"
+#include "serverIface.h"
 #include <exception>
 #include <memory>
 
@@ -15,7 +16,7 @@ class ServerFailedToStart : public std::exception
     }
 };
 
-class Server
+class Server : public ServerIface
 {
 public:
     Server()
