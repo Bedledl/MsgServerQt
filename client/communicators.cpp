@@ -132,7 +132,6 @@ std::string ClientCommunicator::answerMessage(std::string msg)
         }
         case ServerParticipantCommandId::SendEntryDate:
         {
-
             auto entryDate = serverParticipantCommand.timestamp();
             QDateTime datetime;
             datetime.setMSecsSinceEpoch(google::protobuf::util::TimeUtil::TimestampToMilliseconds(entryDate));
@@ -164,6 +163,7 @@ std::string ClientCommunicator::answerMessage(std::string msg)
         }
         default:
         {
+            qDebug() << "return malformed message";
             return generateGenericResponseString(ResponseCode::MALFORMED_MESSAGE);
         }
         }
@@ -197,6 +197,7 @@ std::string ClientCommunicator::answerMessage(std::string msg)
     }
     default:
     {
+        qDebug() << "return malformed message";
         return generateGenericResponseString(ResponseCode::MALFORMED_MESSAGE);
     }
     }

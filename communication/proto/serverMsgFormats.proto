@@ -28,7 +28,8 @@ message ServerCommand {
     message ServerChatCommand {
         optional int32 chatKey = 1;
         optional ServerChatCommandId cmd = 2;
-        optional int32 participantKey = 3; // this is for when a participant is added to a spcific chat's participants.
+        optional int32 participantKey = 3; // this is for when another participant is added to a spcific chat's participants.
+        // This functionality is not implemented yet
     }
 
     message ServerParticipantCommand {

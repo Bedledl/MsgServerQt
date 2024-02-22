@@ -7,7 +7,7 @@
 
 class TestServerCommunicator
 {
-    public:
+public:
     TestServerCommunicator(int chatKey, int participantKey, std::string participantName, std::string testMessageContent, QDateTime timestamp);
     std::string getAddedToChatCmd();
     std::string getNewIncomingMessageCmd();

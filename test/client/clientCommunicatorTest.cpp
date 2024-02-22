@@ -145,9 +145,9 @@ public:
         ON_CALL(*this, assignParticipantEntryDate).WillByDefault([this](const ParticipantKey &key, QDateTime entryDate)
                                                                  { return fake_.assignParticipantEntryDate(key, entryDate); });
         ON_CALL(*this, addParticipant).WillByDefault([this](const ParticipantKey &key)
-                                                                 { return fake_.addParticipant(key); });
+                                                     { return fake_.addParticipant(key); });
         ON_CALL(*this, removeParticipant).WillByDefault([this](const ParticipantKey &key)
-                                                                 { return fake_.removeParticipant(key); });
+                                                        { return fake_.removeParticipant(key); });
         ON_CALL(*this, addParticipantToChat).WillByDefault([this](const ChatKey &chatKey, const ParticipantKey &participantKey)
                                                            { return fake_.addParticipantToChat(chatKey, participantKey); });
         ON_CALL(*this, removeParticipantFromChat).WillByDefault([this](const ChatKey &chatKey, const ParticipantKey &participantKey)
