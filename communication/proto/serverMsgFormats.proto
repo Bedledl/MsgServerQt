@@ -1,42 +1,54 @@
 syntax = "proto2";
 
 import "serverClientCommunication.proto";
+import "google/protobuf/timestamp.proto";
 
 enum ServerCommandId {
     ServerGenericResponse = 0;
     ServerChatCommand = 1;
     ServerParticipantCommand = 2;
+    ServerMessageCommand = 3;
 }
 
 enum ServerChatCommandId {
     AddedToChat = 0;
-    ServerNewMessage = 1;
-    LeftChat = 2;
+    LeftChat = 1;
 }
 
 enum ServerParticipantCommandId {
-    SendName = 0;
-    SendEntryDate = 1;
+    Added = 0;
+    SendName = 1;
+    SendEntryDate = 2;
 }
 
 message ServerCommand {
     message ServerChatCommand {
         optional int32 chatKey = 1;
         optional ServerChatCommandId cmd = 2;
-        optional Data data = 3;
     }
 
     message ServerParticipantCommand {
         optional int32 participantKey = 1;
         optional ServerParticipantCommandId cmd = 2;
-        optional Data data = 3;
+        oneof info {
+            string name = 3;
+            google.protobuf.Timestamp timestamp = 4;
+        }
+    }
+
+    message ServerMessageCommand {
+        optional int32 chatKey = 1;
+        optional int32 participantKey = 2;
+        optional string content = 3;
+        optional google.protobuf.Timestamp timestamp = 4;
     }
 
     optional ServerCommandId cmd = 1;
 
     oneof content {
-        Data data = 2;
-        ServerChatCommand chatCmd = 3;
-        ServerParticipantCommand participantCmd = 4;
+        ServerChatCommand chatCmd = 2;
+        ServerParticipantCommand participantCmd = 3;
+        ServerMessageCommand msgCmd = 4;
+        ResponseCode response = 5;
     }
 }

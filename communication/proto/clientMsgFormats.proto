@@ -1,18 +1,18 @@
 syntax = "proto2";
 
 import "serverClientCommunication.proto";
+import "google/protobuf/timestamp.proto";
 
 enum ClientCommandId {
     SetNickname = 0;
     NewChat = 1;
-    GetChatKeys = 2;
+    ClientMessageCommand = 2;
     ClientChatCommand = 3;
     ClientParticipantCommand = 4;
     ClientGenericResponse = 5;
 }
 
 enum ClientChatCommandId {
-    NewClientMessage = 0;
     GetParticipantKeys = 1;
     LeaveChat = 2;
 }
@@ -27,20 +27,27 @@ message ClientCommand {
     message ClientChatCommand {
         optional int32 chatKey = 1;
         optional ClientChatCommandId cmd = 2;
-        optional Data data = 3;
     }
 
     message ClientParticipantCommand {
         optional int32 participantKey = 1;
         optional ClientParticipantCommandId cmd = 2;
-        optional Data data = 3;
+        optional int32 chatKey = 3;
+    }
+
+    message ClientMessageCommand {
+        optional int32 chatKey = 1;
+        optional string content = 2;
+        optional google.protobuf.Timestamp timestamp = 3;
     }
 
     optional ClientCommandId cmd = 1;
 
     oneof content {
-        Data data = 2;
+        ClientMessageCommand msgCmd = 2;
         ClientChatCommand chatCmd = 3;
         ClientParticipantCommand participantCmd = 4;
+        ResponseCode response = 5;
+        string name = 6;
     }
 }

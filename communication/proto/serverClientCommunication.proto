@@ -2,33 +2,9 @@ syntax = "proto2";
 
 import "google/protobuf/timestamp.proto";
 
-message Name {
-    optional int32 nameLength = 1;
-    optional string name = 2;
-}
 
 enum ResponseCode {
     SUCCESS = 0;
     ERROR = 1;
     MALFORMED_MESSAGE = 2;
-}
-
-message ListOfKeys {
-    repeated int32 keys = 1 [packed = true];
-}
-
-message ChatMessage {
-    optional int32 originator_key = 1;
-    optional google.protobuf.Timestamp timestamp = 2;
-    optional string content = 3;
-}
-
-message Data {
-    oneof content {
-        Name name = 1;
-        ListOfKeys keys = 2;
-        google.protobuf.Timestamp date = 3;
-        ResponseCode response = 4;
-        ChatMessage chatMsg = 5;
-    }
 }
