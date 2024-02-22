@@ -1,6 +1,7 @@
 #ifndef CLIENT_COMMUNICATORS_H
 #define CLIENT_COMMUNICATORS_H
 
+#include "clientIface.h"
 #include "clientMsgFormats.pb.h"
 #include "communicator.h"
 #include "serverMsgFormats.pb.h"
@@ -13,7 +14,7 @@ class Client;
 class ClientCommunicator : public Communicator
 {
 public:
-    ClientCommunicator(Client &client) : client(client) {}
+    ClientCommunicator(ClientIface &client) : client(client) {}
     QString answerMessage(QString msg);
     std::string answerMessage(std::string msg);
 
@@ -24,13 +25,11 @@ private:
     {
         ClientCommand serverCmd;
         serverCmd.set_cmd(ClientCommandId::ClientGenericResponse);
-        auto data = new Data();
-        data->set_response(response);
-        serverCmd.set_allocated_data(data);
+        serverCmd.set_response(response);
         return serverCmd.SerializeAsString();
     }
 
-    Client &client;
+    ClientIface &client;
 };
 
 #endif

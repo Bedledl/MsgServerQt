@@ -6,6 +6,7 @@
 #include <QObject>
 
 #include "chat.h"
+#include "clientIface.h"
 #include "communicator.h"
 #include "participant.h"
 
@@ -14,48 +15,12 @@ class QLabel;
 class QTcpSocket;
 QT_END_NAMESPACE
 
-class ClientFailedToConnect : public std::exception
-{
-public:
-    virtual const char *what() const throw()
-    {
-        return "Failed to connect.";
-    }
-};
-
-class ParticipantNotFound : public std::exception
-{
-public:
-    virtual const char *what() const throw()
-    {
-        return "Participant not found.";
-    }
-};
-
-class ChatNotFound : public std::exception
-{
-public:
-    virtual const char *what() const throw()
-    {
-        return "Chat not found.";
-    }
-};
-
-class ChatAlreadyExists : public std::exception
-{
-public:
-    virtual const char *what() const throw()
-    {
-        return "Chat already exists.";
-    }
-};
-
-class Client : public QObject
+class Client : public QObject, public ClientIface
 {
     Q_OBJECT
 public:
     explicit Client(QHostAddress ip, quint16 port, QString nickname, bool pingMode, QObject *parent = nullptr);
-    void addNewChat(const ChatKey &key)
+    void addNewChat(const ChatKey &key) override
     {
         if (chats.contains(key))
         {
@@ -64,7 +29,7 @@ public:
         auto newChat = new Chat(key, this);
         chats.insert(key, newChat);
     }
-    void leaveChat(const ChatKey &key)
+    void leaveChat(const ChatKey &key) override
     {
         auto countDeleted = chats.remove(key);
         if (countDeleted == 0)
@@ -72,7 +37,7 @@ public:
             throw ChatNotFound();
         }
     }
-    void addNewIncomingMessage(const ChatKey &key, QString content, ParticipantKey participantKey, QDateTime timestamp)
+    void addNewIncomingMessage(const ChatKey &key, QString content, const ParticipantKey &participantKey, QDateTime timestamp) override
     {
         if (auto searchChat = chats.find(key); searchChat != chats.end())
         {
@@ -90,21 +55,21 @@ public:
             throw ChatNotFound();
         }
     }
-    void assignParticipantName(const ParticipantKey &key, QString name)
+    void assignParticipantName(const ParticipantKey &key, QString name) override
     {
         if (auto search = registeredParticipants.find(key); search != registeredParticipants.end())
         {
             (*search)->setNickname(name);
         }
     }
-    void assignParticipantEntryDate(const ParticipantKey &key, QDateTime entryDate)
+    void assignParticipantEntryDate(const ParticipantKey &key, QDateTime entryDate) override
     {
         if (auto search = registeredParticipants.find(key); search != registeredParticipants.end())
         {
             (*search)->setEntryDate(std::move(entryDate));
         }
     }
-    QString getNickname() const { return nickname; }
+    QString getNickname() const override { return nickname; }
 
 private slots:
     void readFromSocketAndAswer();
