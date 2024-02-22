@@ -8,12 +8,14 @@
 #include <QString>
 
 class Client;
+#include <string>
 
 class ClientCommunicator : public Communicator
 {
 public:
     ClientCommunicator(Client &client) : client(client) {}
     QString answerMessage(QString msg);
+    std::string answerMessage(std::string msg);
 
     QString welcomeMessage() override;
 

@@ -3,15 +3,17 @@
 
 #include <QString>
 
+#include <string>
+
 #include "client.h"
 #include "clientMsgFormats.pb.h"
 #include "communicators.h"
 #include "serverMsgFormats.pb.h"
 
-QString ClientCommunicator::answerMessage(QString msg)
+std::string ClientCommunicator::answerMessage(std::string msg)
 {
     ServerCommand incomingCmd;
-    incomingCmd.ParseFromString(msg.toStdString());
+    incomingCmd.ParseFromString(msg);
     switch (incomingCmd.cmd())
     {
     case ServerCommandId::ServerGenericResponse:
@@ -32,7 +34,7 @@ QString ClientCommunicator::answerMessage(QString msg)
             }
             catch (ChatAlreadyExists &e){
                 qDebug() << e.what();
-                return QString(generateGenericResponseString(ResponseCode::ERROR).c_str());
+                return generateGenericResponseString(ResponseCode::ERROR);
             }
             break;
         }
@@ -54,7 +56,7 @@ QString ClientCommunicator::answerMessage(QString msg)
             break;
         }
         default:
-            return QString(generateGenericResponseString(ResponseCode::MALFORMED_MESSAGE).c_str());
+            return generateGenericResponseString(ResponseCode::MALFORMED_MESSAGE);
         }
         break;
     }
@@ -81,18 +83,23 @@ QString ClientCommunicator::answerMessage(QString msg)
         }
         default:
         {
-            return QString(generateGenericResponseString(ResponseCode::MALFORMED_MESSAGE).c_str());
+            return generateGenericResponseString(ResponseCode::MALFORMED_MESSAGE);
         }
         }
         break;
     }
     default:
     {
-        return QString(generateGenericResponseString(ResponseCode::MALFORMED_MESSAGE).c_str());
+        return generateGenericResponseString(ResponseCode::MALFORMED_MESSAGE);
     }
     }
-    return QString(generateGenericResponseString(ResponseCode::MALFORMED_MESSAGE).c_str());
+    return generateGenericResponseString(ResponseCode::MALFORMED_MESSAGE);
 };
+
+QString ClientCommunicator::answerMessage(QString msg)
+{
+    return QString::fromStdString(answerMessage(msg.toStdString()));
+}
 
 QString ClientCommunicator::welcomeMessage()
 {
