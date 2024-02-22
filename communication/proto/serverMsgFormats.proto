@@ -11,8 +11,10 @@ enum ServerCommandId {
 }
 
 enum ServerChatCommandId {
-    AddedToChat = 0;
-    LeftChat = 1;
+    AddedToChat = 0; // the client was added to a chat
+    LeftChat = 1; // the client was removed from a chat
+    ParticipantAddedToChat = 2; // a participant was added to a chat, that the client is in
+    ParticipantLeftChat = 3; // a participant left a chat that the cliet is in
 }
 
 enum ServerParticipantCommandId {
@@ -26,6 +28,7 @@ message ServerCommand {
     message ServerChatCommand {
         optional int32 chatKey = 1;
         optional ServerChatCommandId cmd = 2;
+        optional int32 participantKey = 3; // this is for when a participant is added to a spcific chat's participants.
     }
 
     message ServerParticipantCommand {

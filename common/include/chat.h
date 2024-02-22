@@ -31,6 +31,16 @@ public:
         // TODO
         add_message(Message(content));
     }
+    void addParticipant(std::shared_ptr<Participant> participant)
+    {
+        // TODO
+        qWarning("Chat::addParticipant not implemented");
+    };
+    void removeParticipant(std::shared_ptr<Participant> participant)
+    {
+        // TODO
+        qWarning("Chat::removeParticipant not implemented");
+    };
 
 public slots:
     void add_message(Message msg);
@@ -40,6 +50,7 @@ signals:
 
 protected:
     const ChatKey key;
+    std::vector<std::shared_ptr<Participant>> participants;
 };
 
 #endif

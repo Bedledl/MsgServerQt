@@ -88,6 +88,42 @@ public:
             (*search)->setEntryDate(std::move(entryDate));
         }
     }
+    void addParticipantToChat(const ChatKey &chatKey, const ParticipantKey &participantKey)
+    {
+        if (auto searchChat = chats.find(chatKey); searchChat != chats.end())
+        {
+            if (auto searchParticipant = registeredParticipants.find(participantKey); searchParticipant != registeredParticipants.end())
+            {
+                (*searchChat)->addParticipant(*searchParticipant);
+            }
+            else
+            {
+                throw ParticipantNotFound();
+            }
+        }
+        else
+        {
+            throw ChatNotFound();
+        }
+    }
+    void removeParticipantFromChat(const ChatKey &chatKey, const ParticipantKey &participantKey)
+    {
+        if (auto searchChat = chats.find(chatKey); searchChat != chats.end())
+        {
+            if (auto searchParticipant = registeredParticipants.find(participantKey); searchParticipant != registeredParticipants.end())
+            {
+                (*searchChat)->removeParticipant(*searchParticipant);
+            }
+            else
+            {
+                throw ParticipantNotFound();
+            }
+        }
+        else
+        {
+            throw ChatNotFound();
+        }
+    }
     QString getNickname() const override { return nickname; }
 
 private slots:

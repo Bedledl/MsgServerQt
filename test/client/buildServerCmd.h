@@ -17,6 +17,9 @@ class TestServerCommunicator
     std::string getParticipantRemovedCmd();
     std::string getParticipantNameCmd();
     std::string getParticipantEntryDateCmd();
+    std::string getParticipantAddedToChatCmd();
+    std::string getParticipantLeftChatCmd();
+
 private:
     int chatKey;
     int participantKey;

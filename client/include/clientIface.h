@@ -62,6 +62,8 @@ public:
     virtual void removeParticipant(const ParticipantKey &key) = 0;
     virtual void assignParticipantName(const ParticipantKey &key, QString name) = 0;
     virtual void assignParticipantEntryDate(const ParticipantKey &key, QDateTime entryDate) = 0;
+    virtual void addParticipantToChat(const ChatKey &chatKey, const ParticipantKey &participantKey) = 0;
+    virtual void removeParticipantFromChat(const ChatKey &chatKey, const ParticipantKey &participantKey) = 0;
     virtual QString getNickname() const = 0;
 };
 

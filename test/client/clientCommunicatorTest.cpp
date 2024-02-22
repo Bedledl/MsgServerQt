@@ -5,6 +5,7 @@
 
 #include "../client/include/communicators.h"
 #include "buildServerCmd.h"
+#include "chat.h"
 #include "clientIface.h"
 #include "clientMsgFormats.pb.h"
 #include "serverMsgFormats.pb.h"
@@ -61,10 +62,43 @@ public:
             throw ParticipantNotFound();
         }
     }
+    virtual void addParticipantToChat(const ChatKey &chatKey, const ParticipantKey &participantKey)
+    {
+        if (std::find(chatKeys.begin(), chatKeys.end(), chatKey) == chatKeys.end())
+        {
+            throw ChatNotFound();
+        }
+        if (std::find(participantKeys.begin(), participantKeys.end(), participantKey) == participantKeys.end())
+        {
+            throw ParticipantNotFound();
+        }
+        if (std::find(chatParticipants[chatKey].begin(), chatParticipants[chatKey].end(), participantKey) != chatParticipants[chatKey].end())
+        {
+            throw ParticipantAlreadyExists();
+        }
+        chatParticipants[chatKey].push_back(participantKey);
+    };
+    virtual void removeParticipantFromChat(const ChatKey &chatKey, const ParticipantKey &participantKey)
+    {
+        if (std::find(chatKeys.begin(), chatKeys.end(), chatKey) == chatKeys.end())
+        {
+            throw ChatNotFound();
+        }
+        if (std::find(participantKeys.begin(), participantKeys.end(), participantKey) == participantKeys.end())
+        {
+            throw ParticipantNotFound();
+        }
+        auto countDeleted = std::remove(chatParticipants[chatKey].begin(), chatParticipants[chatKey].end(), participantKey);
+        if (countDeleted == chatParticipants[chatKey].end())
+        {
+            throw ParticipantNotFound();
+        }
+    };
 
 private:
     std::vector<ChatKey> chatKeys = {};
     std::vector<ParticipantKey> participantKeys = {};
+    std::map<ChatKey, std::vector<ParticipantKey>> chatParticipants = {};
 };
 
 class MockClient : public ClientIface
@@ -77,6 +111,8 @@ public:
     MOCK_METHOD(QString, getNickname, (), (const, override));
     MOCK_METHOD(void, addNewChat, (const ChatKey &key), (override));
     MOCK_METHOD(void, leaveChat, (const ChatKey &key), (override));
+    MOCK_METHOD(void, addParticipantToChat, (const ChatKey &chatKey, const ParticipantKey &participantKey), (override));
+    MOCK_METHOD(void, removeParticipantFromChat, (const ChatKey &chatKey, const ParticipantKey &participantKey), (override));
     MOCK_METHOD(void, addNewIncomingMessage, (const ChatKey &key, const QString content, const ParticipantKey &participantKey, const QDateTime timestamp), (override));
     MOCK_METHOD(void, assignParticipantName, (const ParticipantKey &key, const QString name), (override));
     MOCK_METHOD(void, assignParticipantEntryDate, (const ParticipantKey &key, QDateTime entryDate), (override));
@@ -101,6 +137,10 @@ public:
                                                                  { return fake_.addParticipant(key); });
         ON_CALL(*this, removeParticipant).WillByDefault([this](const ParticipantKey &key)
                                                                  { return fake_.removeParticipant(key); });
+        ON_CALL(*this, addParticipantToChat).WillByDefault([this](const ChatKey &chatKey, const ParticipantKey &participantKey)
+                                                           { return fake_.addParticipantToChat(chatKey, participantKey); });
+        ON_CALL(*this, removeParticipantFromChat).WillByDefault([this](const ChatKey &chatKey, const ParticipantKey &participantKey)
+                                                                { return fake_.removeParticipantFromChat(chatKey, participantKey); });
     }
 
 private:
@@ -164,6 +204,48 @@ TEST_F(ClientCommunicatorTest, AddNewChatTwice)
 
     reponse = getResponseCode(serverMsgGenerator.getAddedToChatCmd());
     EXPECT_EQ(reponse, ResponseCode::ERROR);
+}
+
+TEST_F(ClientCommunicatorTest, ParticpantAddedToChat)
+{
+    EXPECT_CALL(client, addNewChat(chatKey)).Times(1);
+    EXPECT_CALL(client, addParticipant(participantKey)).Times(1);
+    EXPECT_CALL(client, addParticipantToChat(chatKey, participantKey)).Times(3);
+
+    auto response = getResponseCode(serverMsgGenerator.getParticipantAddedToChatCmd());
+    EXPECT_EQ(response, ResponseCode::ERROR);
+
+    getResponseCode(serverMsgGenerator.getAddedToChatCmd());
+
+    response = getResponseCode(serverMsgGenerator.getParticipantAddedToChatCmd());
+    EXPECT_EQ(response, ResponseCode::ERROR);
+
+    getResponseCode(serverMsgGenerator.getParticipantAddedCmd());
+
+    response = getResponseCode(serverMsgGenerator.getParticipantAddedToChatCmd());
+    EXPECT_EQ(response, ResponseCode::SUCCESS);
+}
+
+TEST_F(ClientCommunicatorTest, ParticipantLeftChat)
+{
+    EXPECT_CALL(client, addNewChat(chatKey)).Times(1);
+    EXPECT_CALL(client, addParticipant(participantKey)).Times(1);
+    EXPECT_CALL(client, addParticipantToChat(chatKey, participantKey)).Times(1);
+    EXPECT_CALL(client, removeParticipantFromChat(chatKey, participantKey)).Times(3);
+
+    auto response = getResponseCode(serverMsgGenerator.getParticipantLeftChatCmd());
+    EXPECT_EQ(response, ResponseCode::ERROR);
+
+    getResponseCode(serverMsgGenerator.getAddedToChatCmd());
+    getResponseCode(serverMsgGenerator.getParticipantAddedCmd());
+
+    response = getResponseCode(serverMsgGenerator.getParticipantLeftChatCmd());
+    EXPECT_EQ(response, ResponseCode::ERROR);
+
+    getResponseCode(serverMsgGenerator.getParticipantAddedToChatCmd());
+
+    response = getResponseCode(serverMsgGenerator.getParticipantLeftChatCmd());
+    EXPECT_EQ(response, ResponseCode::SUCCESS);
 }
 
 TEST_F(ClientCommunicatorTest, LeaveChat)

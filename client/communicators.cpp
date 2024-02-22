@@ -55,6 +55,44 @@ std::string ClientCommunicator::answerMessage(std::string msg)
             return generateGenericResponseString(ResponseCode::SUCCESS);
             break;
         }
+        case ServerChatCommandId::ParticipantAddedToChat:
+        {
+            auto participantKey = chatCmd.participantkey();
+            auto chatKey = chatCmd.chatkey();
+            try
+            {
+                client.addParticipantToChat(chatKey, participantKey);
+            }
+            catch (ChatNotFound &e)
+            {
+                return generateGenericResponseString(ResponseCode::ERROR);
+            }
+            catch (ParticipantNotFound &e)
+            {
+                return generateGenericResponseString(ResponseCode::ERROR);
+            }
+            return generateGenericResponseString(ResponseCode::SUCCESS);
+            break;
+        }
+        case ServerChatCommandId::ParticipantLeftChat:
+        {
+            auto participantKey = chatCmd.participantkey();
+            auto chatKey = chatCmd.chatkey();
+            try
+            {
+                client.removeParticipantFromChat(chatKey, participantKey);
+            }
+            catch (ChatNotFound &e)
+            {
+                return generateGenericResponseString(ResponseCode::ERROR);
+            }
+            catch (ParticipantNotFound &e)
+            {
+                return generateGenericResponseString(ResponseCode::ERROR);
+            }
+            return generateGenericResponseString(ResponseCode::SUCCESS);
+            break;
+        }
         default:
             return generateGenericResponseString(ResponseCode::MALFORMED_MESSAGE);
         }

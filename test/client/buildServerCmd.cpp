@@ -120,3 +120,32 @@ std::string TestServerCommunicator::getParticipantEntryDateCmd()
     serverCmd.set_allocated_participantcmd(participantCmd);
     return serverCmd.SerializeAsString();
 }
+
+std::string TestServerCommunicator::getParticipantAddedToChatCmd()
+{
+    ServerCommand serverCmd;
+    serverCmd.set_cmd(ServerCommandId::ServerChatCommand);
+
+    auto chatCmd = new ServerCommand_ServerChatCommand();
+    chatCmd->set_cmd(ServerChatCommandId::ParticipantAddedToChat);
+
+    chatCmd->set_chatkey(chatKey);
+    chatCmd->set_participantkey(participantKey);
+
+    serverCmd.set_allocated_chatcmd(chatCmd);
+    return serverCmd.SerializeAsString();
+}
+std::string TestServerCommunicator::getParticipantLeftChatCmd()
+{
+    ServerCommand serverCmd;
+    serverCmd.set_cmd(ServerCommandId::ServerChatCommand);
+
+    auto chatCmd = new ServerCommand_ServerChatCommand();
+    chatCmd->set_cmd(ServerChatCommandId::ParticipantLeftChat);
+
+    chatCmd->set_chatkey(chatKey);
+    chatCmd->set_participantkey(participantKey);
+
+    serverCmd.set_allocated_chatcmd(chatCmd);
+    return serverCmd.SerializeAsString();
+}
