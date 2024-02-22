@@ -25,7 +25,7 @@ private:
     int participantKey;
     std::string participantName;
     std::string testMessageContent;
+    QDateTime timestamp;
 };
-
 
 #endif /* E563A460_DD74_425F_8ADE_F1B635A275BB */

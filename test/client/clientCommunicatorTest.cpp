@@ -42,9 +42,20 @@ public:
     }
     virtual void assignParticipantName(const ParticipantKey &key, [[maybe_unused]] const QString name) override
     {
+        if (std::find(participantKeys.begin(), participantKeys.end(), key) != participantKeys.end())
+        {
+            return;
+        }
+        throw ParticipantNotFound();
     }
     virtual void assignParticipantEntryDate(const ParticipantKey &key, [[maybe_unused]] const QDateTime entryDate) override
     {
+        if (std::find(participantKeys.begin(), participantKeys.end(), key) != participantKeys.end())
+        {
+            return;
+        }
+        throw ParticipantNotFound();
+    }
     virtual void addParticipant(const ParticipantKey &key)
     {
         if (std::find(participantKeys.begin(), participantKeys.end(), key) == participantKeys.end())
@@ -173,6 +184,8 @@ protected:
         EXPECT_EQ(genneratedResponse.cmd(), ClientCommandId::ClientGenericResponse);
         return genneratedResponse.response();
     }
+    std::function<bool(const QDateTime)> timeStampMatch = [&](const QDateTime &ts)
+    { return timestamp.toString().compare(ts.toString()) == 0; };
 };
 
 TEST_F(ClientCommunicatorTest, WelcomeMessage)
@@ -323,14 +336,28 @@ TEST_F(ClientCommunicatorTest, RemoveParticipant)
 
 TEST_F(ClientCommunicatorTest, AssignParticipantName)
 {
-    ParticipantKey key = 123;
-    QString name = "John";
-    EXPECT_CALL(client, assignParticipantName(key, name)).Times(1);
+    EXPECT_CALL(client, assignParticipantName(participantKey, QString::fromStdString(participantName))).Times(2);
+    EXPECT_CALL(client, addParticipant(participantKey)).Times(1);
+
+    auto response = getResponseCode(serverMsgGenerator.getParticipantNameCmd());
+    EXPECT_EQ(response, ResponseCode::ERROR);
+
+    getResponseCode(serverMsgGenerator.getParticipantAddedCmd());
+
+    response = getResponseCode(serverMsgGenerator.getParticipantNameCmd());
+    EXPECT_EQ(response, ResponseCode::SUCCESS);
 }
 
 TEST_F(ClientCommunicatorTest, AssignParticipantEntryDate)
 {
-    ParticipantKey key = 123;
-    QDateTime entryDate = QDateTime::currentDateTime();
-    EXPECT_CALL(client, assignParticipantEntryDate(key, entryDate)).Times(1);
+    EXPECT_CALL(client, assignParticipantEntryDate(participantKey, testing::Truly(timeStampMatch))).Times(2);
+    EXPECT_CALL(client, addParticipant(participantKey)).Times(1);
+
+    auto response = getResponseCode(serverMsgGenerator.getParticipantEntryDateCmd());
+    EXPECT_EQ(response, ResponseCode::ERROR);
+
+    getResponseCode(serverMsgGenerator.getParticipantAddedCmd());
+
+    response = getResponseCode(serverMsgGenerator.getParticipantEntryDateCmd());
+    EXPECT_EQ(response, ResponseCode::SUCCESS);
 }

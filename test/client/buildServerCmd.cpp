@@ -6,8 +6,8 @@
 
 #include <iostream>
 
-TestServerCommunicator::TestServerCommunicator(int chatKey, int participantKey, std::string participantName, std::string testMessageContent, QDateTime currentDateTime)
-    : chatKey(chatKey), participantKey(participantKey), participantName(participantName), testMessageContent(testMessageContent) {}
+TestServerCommunicator::TestServerCommunicator(int chatKey, int participantKey, std::string participantName, std::string testMessageContent, QDateTime timestamp)
+    : chatKey(chatKey), participantKey(participantKey), participantName(participantName), testMessageContent(testMessageContent), timestamp(timestamp) {}
 
 std::string TestServerCommunicator::getAddedToChatCmd()
 {
@@ -110,11 +110,11 @@ std::string TestServerCommunicator::getParticipantEntryDateCmd()
     serverCmd.set_cmd(ServerCommandId::ServerParticipantCommand);
 
     auto participantCmd = new ServerCommand_ServerParticipantCommand();
-    participantCmd->set_cmd(ServerParticipantCommandId::SendName);
+    participantCmd->set_cmd(ServerParticipantCommandId::SendEntryDate);
     participantCmd->set_participantkey(participantKey);
 
-    auto ts = new google::protobuf::Timestamp();
-    ts->set_seconds(QDateTime::currentDateTime().toSecsSinceEpoch());
+    auto ts = new google::protobuf::Timestamp(); // Create an instance of the Timestamp class
+    ts->set_seconds(timestamp.toSecsSinceEpoch());
     participantCmd->set_allocated_timestamp(ts);
 
     serverCmd.set_allocated_participantcmd(participantCmd);

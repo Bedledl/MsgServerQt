@@ -134,16 +134,32 @@ std::string ClientCommunicator::answerMessage(std::string msg)
         {
 
             auto entryDate = serverParticipantCommand.timestamp();
-
-            std::chrono::milliseconds ms = std::chrono::milliseconds(google::protobuf::util::TimeUtil::TimestampToMilliseconds(entryDate));
             QDateTime datetime;
-            client.assignParticipantEntryDate(key, datetime.addDuration(ms));
+            datetime.setMSecsSinceEpoch(google::protobuf::util::TimeUtil::TimestampToMilliseconds(entryDate));
+            try
+            {
+                client.assignParticipantEntryDate(key, datetime);
+            }
+            catch (ParticipantNotFound &e)
+            {
+                return generateGenericResponseString(ResponseCode::ERROR);
+            }
+            return generateGenericResponseString(ResponseCode::SUCCESS);
             break;
         }
         case ServerParticipantCommandId::SendName:
         {
             auto name = serverParticipantCommand.name();
-            client.assignParticipantName(key, QString::fromStdString(name));
+
+            try
+            {
+                client.assignParticipantName(key, QString::fromStdString(name));
+            }
+            catch (ParticipantNotFound &e)
+            {
+                return generateGenericResponseString(ResponseCode::ERROR);
+            }
+            return generateGenericResponseString(ResponseCode::SUCCESS);
             break;
         }
         default:
