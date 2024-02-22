@@ -77,6 +77,19 @@ std::string TestServerCommunicator::getParticipantAddedCmd()
     return serverCmd.SerializeAsString();
 }
 
+std::string TestServerCommunicator::getParticipantRemovedCmd()
+{
+    ServerCommand serverCmd;
+    serverCmd.set_cmd(ServerCommandId::ServerParticipantCommand);
+
+    auto participantCmd = new ServerCommand_ServerParticipantCommand();
+    participantCmd->set_cmd(ServerParticipantCommandId::Removed);
+    participantCmd->set_participantkey(participantKey);
+
+    serverCmd.set_allocated_participantcmd(participantCmd);
+    return serverCmd.SerializeAsString();
+}
+
 std::string TestServerCommunicator::getParticipantNameCmd()
 {
     ServerCommand serverCmd;

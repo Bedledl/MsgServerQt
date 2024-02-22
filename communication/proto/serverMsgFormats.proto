@@ -17,8 +17,9 @@ enum ServerChatCommandId {
 
 enum ServerParticipantCommandId {
     Added = 0;
-    SendName = 1;
-    SendEntryDate = 2;
+    Removed = 1;
+    SendName = 2;
+    SendEntryDate = 3;
 }
 
 message ServerCommand {

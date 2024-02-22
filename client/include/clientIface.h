@@ -43,12 +43,23 @@ public:
     }
 };
 
+class ParticipantAlreadyExists : public std::exception
+{
+public:
+    virtual const char *what() const throw()
+    {
+        return "Participant already exists.";
+    }
+};
+
 class ClientIface
 {
 public:
     virtual void addNewChat(const ChatKey &key) = 0;
     virtual void leaveChat(const ChatKey &key) = 0;
     virtual void addNewIncomingMessage(const ChatKey &key, QString content, const ParticipantKey &participantKey, QDateTime timestamp) = 0;
+    virtual void addParticipant(const ParticipantKey &key) = 0;
+    virtual void removeParticipant(const ParticipantKey &key) = 0;
     virtual void assignParticipantName(const ParticipantKey &key, QString name) = 0;
     virtual void assignParticipantEntryDate(const ParticipantKey &key, QDateTime entryDate) = 0;
     virtual QString getNickname() const = 0;

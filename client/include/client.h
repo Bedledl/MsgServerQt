@@ -55,6 +55,25 @@ public:
             throw ChatNotFound();
         }
     }
+
+    void addParticipant(const ParticipantKey &key) override
+    {
+        if (auto search = registeredParticipants.find(key); search != registeredParticipants.end())
+        {
+            throw ParticipantAlreadyExists();
+        }
+        registeredParticipants.insert(key, std::make_shared<Participant>(key));
+    }
+
+    void removeParticipant(const ParticipantKey &key) override
+    {
+        auto nrDeleted = registeredParticipants.remove(key);
+        if (nrDeleted == 0)
+        {
+            throw ParticipantNotFound();
+        }
+    }
+
     void assignParticipantName(const ParticipantKey &key, QString name) override
     {
         if (auto search = registeredParticipants.find(key); search != registeredParticipants.end())

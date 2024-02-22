@@ -44,6 +44,22 @@ public:
     }
     virtual void assignParticipantEntryDate(const ParticipantKey &key, [[maybe_unused]] const QDateTime entryDate) override
     {
+    virtual void addParticipant(const ParticipantKey &key)
+    {
+        if (std::find(participantKeys.begin(), participantKeys.end(), key) == participantKeys.end())
+        {
+            participantKeys.push_back(key);
+            return;
+        }
+        throw ParticipantAlreadyExists();
+    }
+    virtual void removeParticipant(const ParticipantKey &key)
+    {
+        auto countDeleted = std::remove(participantKeys.begin(), participantKeys.end(), key);
+        if (countDeleted == chatKeys.end())
+        {
+            throw ParticipantNotFound();
+        }
     }
 
 private:
@@ -64,6 +80,8 @@ public:
     MOCK_METHOD(void, addNewIncomingMessage, (const ChatKey &key, const QString content, const ParticipantKey &participantKey, const QDateTime timestamp), (override));
     MOCK_METHOD(void, assignParticipantName, (const ParticipantKey &key, const QString name), (override));
     MOCK_METHOD(void, assignParticipantEntryDate, (const ParticipantKey &key, QDateTime entryDate), (override));
+    MOCK_METHOD(void, addParticipant, (const ParticipantKey &key), (override));
+    MOCK_METHOD(void, removeParticipant, (const ParticipantKey &key), (override));
 
     void DelegateToFake()
     {
@@ -79,6 +97,10 @@ public:
                                                             { return fake_.assignParticipantName(key, name); });
         ON_CALL(*this, assignParticipantEntryDate).WillByDefault([this](const ParticipantKey &key, QDateTime entryDate)
                                                                  { return fake_.assignParticipantEntryDate(key, entryDate); });
+        ON_CALL(*this, addParticipant).WillByDefault([this](const ParticipantKey &key)
+                                                                 { return fake_.addParticipant(key); });
+        ON_CALL(*this, removeParticipant).WillByDefault([this](const ParticipantKey &key)
+                                                                 { return fake_.removeParticipant(key); });
     }
 
 private:
@@ -191,6 +213,31 @@ TEST_F(ClientCommunicatorTest, AddNewIncomingMessageUnknownChat)
 //     auto reponse = getResponseCode(serverMsgGenerator.getRemovedFromChatCmd());
 //     EXPECT_EQ(reponse, ResponseCode::ERROR);
 // }
+
+TEST_F(ClientCommunicatorTest, AddParticipant)
+{
+    EXPECT_CALL(client, addParticipant(participantKey)).Times(2);
+
+    auto response = getResponseCode(serverMsgGenerator.getParticipantAddedCmd());
+    EXPECT_EQ(response, ResponseCode::SUCCESS);
+
+    response = getResponseCode(serverMsgGenerator.getParticipantAddedCmd());
+    EXPECT_EQ(response, ResponseCode::ERROR);
+}
+
+TEST_F(ClientCommunicatorTest, RemoveParticipant)
+{
+    EXPECT_CALL(client, removeParticipant(participantKey)).Times(2);
+    EXPECT_CALL(client, addParticipant(participantKey)).Times(1);
+
+    auto response = getResponseCode(serverMsgGenerator.getParticipantRemovedCmd());
+    EXPECT_EQ(response, ResponseCode::ERROR);
+
+    getResponseCode(serverMsgGenerator.getParticipantAddedCmd());
+
+    response = getResponseCode(serverMsgGenerator.getParticipantRemovedCmd());
+    EXPECT_EQ(response, ResponseCode::SUCCESS);
+}
 
 TEST_F(ClientCommunicatorTest, AssignParticipantName)
 {

@@ -66,6 +66,32 @@ std::string ClientCommunicator::answerMessage(std::string msg)
         auto key = serverParticipantCommand.participantkey();
         switch (serverParticipantCommand.cmd())
         {
+        case ServerParticipantCommandId::Added:
+        {
+            try
+            {
+                client.addParticipant(key);
+            }
+            catch (ParticipantAlreadyExists &e)
+            {
+                return generateGenericResponseString(ResponseCode::ERROR);
+            }
+            return generateGenericResponseString(ResponseCode::SUCCESS);
+            break;
+        }
+        case ServerParticipantCommandId::Removed:
+        {
+            try
+            {
+                client.removeParticipant(key);
+            }
+            catch (ParticipantNotFound &e)
+            {
+                return generateGenericResponseString(ResponseCode::ERROR);
+            }
+            return generateGenericResponseString(ResponseCode::SUCCESS);
+            break;
+        }
         case ServerParticipantCommandId::SendEntryDate:
         {
 
