@@ -29,30 +29,30 @@ std::string ClientCommunicator::answerMessage(std::string msg)
         {
         case ServerChatCommandId::AddedToChat:
         {
-            try{
+            try
+            {
                 client.addNewChat(chatCmd.chatkey());
             }
-            catch (ChatAlreadyExists &e){
+            catch (ChatAlreadyExists &e)
+            {
                 qDebug() << e.what();
                 return generateGenericResponseString(ResponseCode::ERROR);
             }
+            return generateGenericResponseString(ResponseCode::SUCCESS);
             break;
         }
         case ServerChatCommandId::LeftChat:
         {
-            client.leaveChat(chatCmd.chatkey());
-            break;
-        }
-        case ServerChatCommandId::ServerNewMessage:
-        {
-            auto data = chatCmd.data().chatmsg();
-            auto participantKey = data.originator_key();
-            auto timestamp = data.timestamp();
-            auto content = data.content();
-
-            std::chrono::milliseconds ms = std::chrono::milliseconds(google::protobuf::util::TimeUtil::TimestampToMilliseconds(timestamp));
-            QDateTime datetime;
-            client.addNewIncomingMessage(chatCmd.chatkey(), QString(content.c_str()), participantKey, datetime.addDuration(ms));
+            try
+            {
+                client.leaveChat(chatCmd.chatkey());
+            }
+            catch (ChatNotFound &e)
+            {
+                qDebug() << e.what();
+                return generateGenericResponseString(ResponseCode::ERROR);
+            }
+            return generateGenericResponseString(ResponseCode::SUCCESS);
             break;
         }
         default:
@@ -68,7 +68,8 @@ std::string ClientCommunicator::answerMessage(std::string msg)
         {
         case ServerParticipantCommandId::SendEntryDate:
         {
-            auto entryDate = serverParticipantCommand.data().date();
+
+            auto entryDate = serverParticipantCommand.timestamp();
 
             std::chrono::milliseconds ms = std::chrono::milliseconds(google::protobuf::util::TimeUtil::TimestampToMilliseconds(entryDate));
             QDateTime datetime;
@@ -77,8 +78,8 @@ std::string ClientCommunicator::answerMessage(std::string msg)
         }
         case ServerParticipantCommandId::SendName:
         {
-            auto name = serverParticipantCommand.data().name().name();
-            client.assignParticipantName(key, QString(name.c_str()));
+            auto name = serverParticipantCommand.name();
+            client.assignParticipantName(key, QString::fromStdString(name));
             break;
         }
         default:
@@ -86,6 +87,32 @@ std::string ClientCommunicator::answerMessage(std::string msg)
             return generateGenericResponseString(ResponseCode::MALFORMED_MESSAGE);
         }
         }
+        break;
+    }
+    case ServerCommandId::ServerMessageCommand:
+    {
+        auto msgCmd = incomingCmd.msgcmd();
+        auto participantKey = msgCmd.participantkey();
+        auto chatKey = msgCmd.chatkey();
+        auto timestamp = msgCmd.timestamp();
+        auto content = msgCmd.content();
+
+        QDateTime datetime;
+        datetime.setMSecsSinceEpoch(google::protobuf::util::TimeUtil::TimestampToMilliseconds(timestamp));
+
+        try
+        {
+            client.addNewIncomingMessage(chatKey, QString::fromStdString(content), participantKey, datetime);
+        }
+        catch (ChatNotFound &e)
+        {
+            return generateGenericResponseString(ResponseCode::ERROR);
+        }
+        catch (ParticipantNotFound &e)
+        {
+            return generateGenericResponseString(ResponseCode::ERROR);
+        }
+        return generateGenericResponseString(ResponseCode::SUCCESS);
         break;
     }
     default:
@@ -105,13 +132,7 @@ QString ClientCommunicator::welcomeMessage()
 {
     ClientCommand ccc;
     ccc.set_cmd(ClientCommandId::SetNickname);
-
-    auto name = new Name();
-    name->set_name("Erika Musterfrau"); //TODO
-    name->set_namelength(17);
-
-    auto data = new Data();
-    data->set_allocated_name(name);
-    ccc.set_allocated_data(data);
-    return QString(ccc.SerializeAsString().c_str());
+    auto nickname = client.getNickname();
+    ccc.set_name(nickname.toStdString());
+    return QString::fromStdString(ccc.SerializeAsString());
 }
