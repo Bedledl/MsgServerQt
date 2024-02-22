@@ -64,3 +64,105 @@ void Client::readFromSocketAndAswer()
     auto written = tcpSocket->write(block);
     std::cout << "wrote Ping to socket" << written << std::endl;
 }
+
+void Client::addNewChat(const ChatKey &key)
+{
+    if (chats.contains(key))
+    {
+        return;
+    }
+    auto newChat = new Chat(key, this);
+    chats.insert(key, newChat);
+}
+void Client::leaveChat(const ChatKey &key)
+{
+    auto countDeleted = chats.remove(key);
+    if (countDeleted == 0)
+    {
+        throw ChatNotFound();
+    }
+}
+void Client::addNewIncomingMessage(const ChatKey &key, QString content, const ParticipantKey &participantKey, QDateTime timestamp)
+{
+    if (auto searchChat = chats.find(key); searchChat != chats.end())
+    {
+        if (auto searchParticipant = registeredParticipants.find(participantKey); searchParticipant != registeredParticipants.end())
+        {
+            (*searchChat)->addMessage(std::move(content), *searchParticipant, std::move(timestamp));
+        }
+        else
+        {
+            throw ParticipantNotFound();
+        }
+    }
+    else
+    {
+        throw ChatNotFound();
+    }
+}
+void Client::addParticipant(const ParticipantKey &key)
+{
+    if (auto search = registeredParticipants.find(key); search != registeredParticipants.end())
+    {
+        throw ParticipantAlreadyExists();
+    }
+    registeredParticipants.insert(key, std::make_shared<Participant>(key));
+}
+void Client::removeParticipant(const ParticipantKey &key)
+{
+    auto nrDeleted = registeredParticipants.remove(key);
+    if (nrDeleted == 0)
+    {
+        throw ParticipantNotFound();
+    }
+}
+void Client::assignParticipantName(const ParticipantKey &key, QString name)
+{
+    if (auto search = registeredParticipants.find(key); search != registeredParticipants.end())
+    {
+        (*search)->setNickname(name);
+    }
+}
+void Client::assignParticipantEntryDate(const ParticipantKey &key, QDateTime entryDate)
+{
+    if (auto search = registeredParticipants.find(key); search != registeredParticipants.end())
+    {
+        (*search)->setEntryDate(std::move(entryDate));
+    }
+}
+void Client::addParticipantToChat(const ChatKey &chatKey, const ParticipantKey &participantKey)
+{
+    if (auto searchChat = chats.find(chatKey); searchChat != chats.end())
+    {
+        if (auto searchParticipant = registeredParticipants.find(participantKey); searchParticipant != registeredParticipants.end())
+        {
+            (*searchChat)->addParticipant(*searchParticipant);
+        }
+        else
+        {
+            throw ParticipantNotFound();
+        }
+    }
+    else
+    {
+        throw ChatNotFound();
+    }
+}
+void Client::removeParticipantFromChat(const ChatKey &chatKey, const ParticipantKey &participantKey)
+{
+    if (auto searchChat = chats.find(chatKey); searchChat != chats.end())
+    {
+        if (auto searchParticipant = registeredParticipants.find(participantKey); searchParticipant != registeredParticipants.end())
+        {
+            (*searchChat)->removeParticipant(*searchParticipant);
+        }
+        else
+        {
+            throw ParticipantNotFound();
+        }
+    }
+    else
+    {
+        throw ChatNotFound();
+    }
+}
