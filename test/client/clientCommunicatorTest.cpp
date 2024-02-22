@@ -33,11 +33,15 @@ public:
             throw ChatNotFound();
         }
     }
-    virtual void addNewIncomingMessage(const ChatKey &key, [[maybe_unused]] const QString content, const ParticipantKey &participantKey, [[maybe_unused]] const QDateTime timestamp) override
+    virtual void addNewIncomingMessage(const ChatKey &chatKey, [[maybe_unused]] const QString content, const ParticipantKey &participantKey, [[maybe_unused]] const QDateTime timestamp) override
     {
-        if (std::find(chatKeys.begin(), chatKeys.end(), key) == chatKeys.end())
+        if (std::find(chatKeys.begin(), chatKeys.end(), chatKey) == chatKeys.end())
         {
             throw ChatNotFound();
+        }
+        if (std::find(participantKeys.begin(), participantKeys.end(), participantKey) == participantKeys.end())
+        {
+            throw ParticipantNotFound();
         }
     }
     virtual void assignParticipantName(const ParticipantKey &key, [[maybe_unused]] const QString name) override
@@ -284,30 +288,38 @@ TEST_F(ClientCommunicatorTest, LeaveUnkownChat)
 TEST_F(ClientCommunicatorTest, AddNewIncomingMessage)
 {
     EXPECT_CALL(client, addNewChat(chatKey)).Times(1);
-    EXPECT_CALL(client, addNewIncomingMessage(chatKey, QString(testMessageContent.c_str()), participantKey, timestamp)).Times(1);
+    EXPECT_CALL(client, addParticipant(participantKey)).Times(1);
+    EXPECT_CALL(client, addNewIncomingMessage(chatKey, QString::fromStdString(testMessageContent), participantKey, testing::Truly(timeStampMatch))).Times(1);
 
     getResponseCode(serverMsgGenerator.getAddedToChatCmd());
+    auto response = getResponseCode(serverMsgGenerator.getParticipantAddedCmd());
+    EXPECT_EQ(response, ResponseCode::SUCCESS);
 
-    auto reponse = getResponseCode(serverMsgGenerator.getNewIncomingMessageCmd());
-    EXPECT_EQ(reponse, ResponseCode::SUCCESS);
+    response = getResponseCode(serverMsgGenerator.getNewIncomingMessageCmd());
+    EXPECT_EQ(response, ResponseCode::SUCCESS);
 }
 
 TEST_F(ClientCommunicatorTest, AddNewIncomingMessageUnknownChat)
 {
-    EXPECT_CALL(client, addNewIncomingMessage(chatKey, QString(testMessageContent.c_str()), participantKey, timestamp)).Times(1);
+    EXPECT_CALL(client, addParticipant(participantKey)).Times(1);
+    EXPECT_CALL(client, addNewIncomingMessage(chatKey, QString::fromStdString(testMessageContent), participantKey, testing::Truly(timeStampMatch))).Times(1);
+
+    getResponseCode(serverMsgGenerator.getParticipantAddedCmd());
 
     auto reponse = getResponseCode(serverMsgGenerator.getNewIncomingMessageCmd());
     EXPECT_EQ(reponse, ResponseCode::ERROR);
 }
 
-// TODO: This test is not possible to implement because the client does currently not have its own managed chat participant list
-// TEST_F(ClientCommunicatorTest, AddNewIncomingMessageUnknownParticipant)
-// {
-//     EXPECT_CALL(client, addNewIncomingMessage(chatKey, testMessageContent, participantKey, timestamp)).Times(1);
+TEST_F(ClientCommunicatorTest, AddNewIncomingMessageUnknownParticipant)
+{
+    EXPECT_CALL(client, addNewChat(chatKey)).Times(1);
+    EXPECT_CALL(client, addNewIncomingMessage(chatKey, QString::fromStdString(testMessageContent), participantKey, testing::Truly(timeStampMatch))).Times(1);
 
-//     auto reponse = getResponseCode(serverMsgGenerator.getRemovedFromChatCmd());
-//     EXPECT_EQ(reponse, ResponseCode::ERROR);
-// }
+    getResponseCode(serverMsgGenerator.getAddedToChatCmd());
+
+    auto reponse = getResponseCode(serverMsgGenerator.getNewIncomingMessageCmd());
+    EXPECT_EQ(reponse, ResponseCode::ERROR);
+}
 
 TEST_F(ClientCommunicatorTest, AddParticipant)
 {
