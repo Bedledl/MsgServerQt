@@ -2,6 +2,7 @@
 #define SERVER_COMMUNICATORS_H
 #include <QString>
 #include <memory>
+#include <string>
 
 #include "communicator.h"
 class ServerParticipant;
@@ -14,7 +15,7 @@ class ServerCommunicator : public Communicator
 
 public:
     ServerCommunicator(Server *server, ServerParticipant *participant) : server(server), participant(participant) {}
-    QString answerMessage(QString msg) override;
+    std::string answerMessage(std::string) override;
     QString welcomeMessage() override;
 
 private:

@@ -15,8 +15,7 @@ class ClientCommunicator : public Communicator
 {
 public:
     ClientCommunicator(ClientIface &client) : client(client) {}
-    QString answerMessage(QString msg);
-    std::string answerMessage(std::string msg);
+    std::string answerMessage(std::string msg) override;
 
     QString welcomeMessage() override;
 

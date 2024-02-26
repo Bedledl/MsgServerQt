@@ -7,7 +7,11 @@
 class Communicator
 {
 public:
-    virtual QString answerMessage(QString msg) = 0;
+    virtual std::string answerMessage(std::string msg) = 0;
+    QString answerMessage(QString msg)
+    {
+        return QString::fromStdString(answerMessage(msg.toStdString()));
+    }
     /// @brief Message that is sent from the Server to start communication after succesfully connecting to client.
     /// @return
     virtual QString welcomeMessage() = 0;
@@ -16,7 +20,7 @@ public:
 class PingPongCommunicator : public Communicator
 {
 public:
-    QString answerMessage(QString msg) override
+    std::string answerMessage(std::string msg) override
     {
         if (msg == "Ping")
         {

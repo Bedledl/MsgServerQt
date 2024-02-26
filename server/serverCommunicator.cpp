@@ -11,10 +11,10 @@ void ServerCommunicator::buildGenericResponse(ServerCommand &cmdBuf, ResponseCod
     cmdBuf.set_response(code);
 }
 
-QString ServerCommunicator::answerMessage(QString msg)
+std::string ServerCommunicator::answerMessage(std::string msg)
 {
     ClientCommand incomingCmd;
-    incomingCmd.ParseFromString(msg.toStdString());
+    incomingCmd.ParseFromString(msg);
 
     ServerCommand outgoingCmd;
 
@@ -157,7 +157,7 @@ QString ServerCommunicator::answerMessage(QString msg)
     ServerCommand outgoing;
     outgoing.set_cmd(ServerCommandId::ServerGenericResponse);
     sleep(10);
-    return QString::fromStdString(outgoing.SerializeAsString());
+    return outgoing.SerializeAsString();
 }
 
 QString ServerCommunicator::welcomeMessage()

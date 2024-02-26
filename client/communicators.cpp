@@ -204,11 +204,6 @@ std::string ClientCommunicator::answerMessage(std::string msg)
     return generateGenericResponseString(ResponseCode::MALFORMED_MESSAGE);
 };
 
-QString ClientCommunicator::answerMessage(QString msg)
-{
-    return QString::fromStdString(answerMessage(msg.toStdString()));
-}
-
 QString ClientCommunicator::welcomeMessage()
 {
     ClientCommand ccc;
