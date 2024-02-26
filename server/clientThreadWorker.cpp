@@ -1,5 +1,6 @@
 #include "clientThreadWorker.h"
 #include "communicators.h"
+#include "chat.h"
 #include "moc_clientThreadWorker.cpp"
 #include "participant.h"
 #include <iostream>
@@ -8,8 +9,8 @@
 
 class Server;
 
-TCPServerWorker::TCPServerWorker(Server *server, qintptr socketDescriptor, bool usePingCommunicator, QObject *parent)
-    : Worker(server, parent), socketDescriptor(socketDescriptor), participant(std::make_unique<ServerParticipant>())
+TCPServerWorker::TCPServerWorker(const Server &server, qintptr socketDescriptor, bool usePingCommunicator, QObject *parent)
+    : Worker(server, parent), socketDescriptor(socketDescriptor)
 {
     tcpSocket = new QTcpSocket(this);
     in.setVersion(QDataStream::Qt_6_6);

@@ -1,39 +1,49 @@
 #ifndef WORKER_H
 #define WORKER_H
 
-#include <QDataStream>
+#include <QObject>
 #include <QTcpSocket>
-#include <QThread>
 
-class Communicator;
+#include "chat.h"
+#include "clientThreadIface.h"
+
 class Server;
-class ServerParticipant;
 
-// https://doc.qt.io/qt-6/qtnetwork-fortuneclient-example.html
-
-class Worker : public QObject
+class Worker : public QObject, public ClientThreadIface
 {
     Q_OBJECT
 public:
-    Worker(Server *server, QObject *parent) : QObject(parent), server(server){};
-    ~Worker(){};
+    Worker(const Server &server, QObject *parent) : QObject(parent), ClientThreadIface(server) {}
 
+    void setNickname(std::string newName) override
+    {
+        participant->setNickname(QString::fromStdString(newName));
+    }
+    void requestLeavingChat(ChatKey &key) override
+    {
+        participant->leaveChat(key);
+    }
+    void requestChatParticipantKeys(ChatKey &key) override
+    {
+        qDebug() << "requestChatParticipantKeys: Not implemented yet";
+    }
+    ChatKey requestNewChat() override
+    {
+        return participant->newChat();
+    }
 public slots:
     virtual void process() = 0;
 signals:
     void finished();
     void error(QTcpSocket::SocketError socketError);
-
-protected:
-    Server *server;
 };
 
 class TCPServerWorker : public Worker
 {
     Q_OBJECT
 public:
-    TCPServerWorker(Server *server, qintptr socketDescriptor, bool usePingCommunicator, QObject *parent);
-    QString get_name() const { return name; }
+    TCPServerWorker(const Server &server, qintptr socketDescriptor, bool usePingCommunicator, QObject *parent);
+
 public slots:
     void process() override;
     void readFromSocketAndAswer();
@@ -41,11 +51,8 @@ public slots:
 private:
     qintptr socketDescriptor;
     QTcpSocket *tcpSocket;
-    QString name;
-    std::unique_ptr<Communicator> communicator;
     QDataStream in;
     QByteArray block;
     QDataStream out{&block, QIODevice::WriteOnly};
-    std::unique_ptr<ServerParticipant> participant;
 };
 #endif
