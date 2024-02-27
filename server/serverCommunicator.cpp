@@ -1,8 +1,8 @@
 #include "clientMsgFormats.pb.h"
 #include "communicators.h"
 #include "participant.h"
-#include "server.h"
 #include "serverMsgFormats.pb.h"
+#include "clientThreadIface.h"
 #include <QString>
 
 void ServerCommunicator::buildGenericResponse(ServerCommand &cmdBuf, ResponseCode code)
@@ -26,7 +26,7 @@ std::string ServerCommunicator::answerMessage(std::string msg)
     case ClientCommandId::SetNickname:
     {
         auto name = incomingCmd.msgcmd().content();
-        participant->setNickname(QString::fromStdString(name));
+        clientThreadWorker.setNickname(name);
         buildGenericResponse(outgoingCmd, ResponseCode::SUCCESS);
         std::cout << "Client Set Nickname Cmd\n";
         break;
@@ -34,7 +34,7 @@ std::string ServerCommunicator::answerMessage(std::string msg)
 
     case ClientCommandId::NewChat:
     {
-        auto newChatKey = participant->newChat();
+        auto newChatKey = clientThreadWorker.getParticipant().newChat();
 
         outgoingCmd.set_cmd(ServerCommandId::ServerChatCommand);
         auto chatCmd = new ServerCommand_ServerChatCommand();
@@ -166,7 +166,7 @@ QString ServerCommunicator::welcomeMessage()
     addedToGlobalChat.set_cmd(ServerCommandId::ServerChatCommand);
 
     auto *internalAddedToGlobalChat = new ServerCommand_ServerChatCommand();
-    auto globalChat = server->getGlobalChat();
+    auto globalChat = clientThreadWorker.getServer().getGlobalChat();
     internalAddedToGlobalChat->set_chatkey(int32_t(globalChat->getKey()));
     internalAddedToGlobalChat->set_cmd(ServerChatCommandId::AddedToChat);
     addedToGlobalChat.set_allocated_chatcmd(internalAddedToGlobalChat);

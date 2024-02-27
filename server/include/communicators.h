@@ -5,8 +5,8 @@
 #include <string>
 
 #include "communicator.h"
-class ServerParticipant;
-class Server;
+
+class ClientThreadIface;
 class ServerCommand;
 enum ResponseCode : int;
 
@@ -14,13 +14,12 @@ class ServerCommunicator : public Communicator
 {
 
 public:
-    ServerCommunicator(Server *server, ServerParticipant *participant) : server(server), participant(participant) {}
     std::string answerMessage(std::string) override;
+    ServerCommunicator(ClientThreadIface &clientThreadIface) : clientThreadWorker(clientThreadIface) {}
     QString welcomeMessage() override;
 
 private:
-    Server *const server;
-    ServerParticipant *const participant;
+    ClientThreadIface &clientThreadWorker;
     void buildGenericResponse(ServerCommand &cmdBuf, ResponseCode code);
 };
 

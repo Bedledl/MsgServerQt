@@ -22,7 +22,7 @@ TCPServerWorker::TCPServerWorker(const Server &server, qintptr socketDescriptor,
     }
     else
     {
-        communicator = std::make_unique<ServerCommunicator>(server, participant.get());
+        communicator = std::make_unique<ServerCommunicator>(*this);
     }
 }
 
