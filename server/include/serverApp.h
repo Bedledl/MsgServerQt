@@ -9,8 +9,6 @@
 
 class Server;
 
-// #include "serverApp.moc"
-
 class ServerApplication : public AppGui
 {
     Q_OBJECT

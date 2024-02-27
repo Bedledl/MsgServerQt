@@ -1,5 +1,6 @@
 #include "server.h"
 #include "clientThreadWorker.h"
+#include <QThread>
 
 void Server::create_new_client_thread(Worker *worker)
 {
