@@ -1,3 +1,5 @@
+#ifndef A48213B2_FC46_48DB_8994_0AC8E86EB7C5
+#define A48213B2_FC46_48DB_8994_0AC8E86EB7C5
 #include <QDateTime>
 #include <QString>
 
@@ -38,3 +40,6 @@ public:
         void getParticipantKeys(ChatKey chat_key) { qDebug("NotImplemented yet"); };
         void leaveChat(ChatKey chat_key) { qDebug("NotImplemented yet"); }
 };
+
+
+#endif /* A48213B2_FC46_48DB_8994_0AC8E86EB7C5 */
