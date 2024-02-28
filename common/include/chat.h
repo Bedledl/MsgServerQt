@@ -4,13 +4,11 @@
 #include <QDate>
 #include <QObject>
 #include <QReadWriteLock>
-#include <functional>
-#include <memory>
+
 #include <set>
 
 #include "message.h"
-
-class Participant;
+#include "participant.h"
 
 typedef unsigned ChatKey;
 
@@ -42,23 +40,10 @@ public:
     Chat(ChatKey key, QObject *parent = nullptr) : QObject(parent), key(key){};
     void foreach_do(std::function<void(const Message &)> func);
     ChatKey getKey() const { return key; };
-    void addMessage(QString content, std::shared_ptr<Participant> sender, QDateTime timestamp)
-    {
-        sender;
-        timestamp;
-        // TODO
-        add_message(Message(content));
-    }
-    void addParticipant(std::shared_ptr<Participant> participant)
-    {
-        // TODO
-        qWarning("Chat::addParticipant not implemented");
-    };
-    void removeParticipant(std::shared_ptr<Participant> participant)
-    {
-        // TODO
-        qWarning("Chat::removeParticipant not implemented");
-    };
+    void addMessage(QString content, std::shared_ptr<Participant> sender, QDateTime timestamp);
+    void addParticipant(std::shared_ptr<Participant> participant);
+    void removeParticipant(std::shared_ptr<Participant> participant);
+    void removeParticipant(ParticipantKey participantKey);
 
 public slots:
     void add_message(Message msg);
