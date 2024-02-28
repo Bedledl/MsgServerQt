@@ -26,14 +26,14 @@ enum ServerParticipantCommandId {
 
 message ServerCommand {
     message ServerChatCommand {
-        optional int32 chatKey = 1;
+        optional uint32 chatKey = 1;
         optional ServerChatCommandId cmd = 2;
-        optional int32 participantKey = 3; // this is for when another participant is added to a spcific chat's participants.
+        optional uint32 participantKey = 3; // this is for when another participant is added to a spcific chat's participants.
         // This functionality is not implemented yet
     }
 
     message ServerParticipantCommand {
-        optional int32 participantKey = 1;
+        optional uint32 participantKey = 1;
         optional ServerParticipantCommandId cmd = 2;
         oneof info {
             string name = 3;
@@ -42,8 +42,8 @@ message ServerCommand {
     }
 
     message ServerMessageCommand {
-        optional int32 chatKey = 1;
-        optional int32 participantKey = 2;
+        optional uint32 chatKey = 1;
+        optional uint32 participantKey = 2;
         optional string content = 3;
         optional google.protobuf.Timestamp timestamp = 4;
     }

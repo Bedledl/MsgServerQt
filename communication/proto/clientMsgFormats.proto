@@ -25,18 +25,18 @@ enum ClientParticipantCommandId {
 
 message ClientCommand {
     message ClientChatCommand {
-        optional int32 chatKey = 1;
+        optional uint32 chatKey = 1;
         optional ClientChatCommandId cmd = 2;
     }
 
     message ClientParticipantCommand {
-        optional int32 participantKey = 1;
+        optional uint32 participantKey = 1;
         optional ClientParticipantCommandId cmd = 2;
-        optional int32 chatKey = 3;
+        optional uint32 chatKey = 3;
     }
 
     message ClientMessageCommand {
-        optional int32 chatKey = 1;
+        optional uint32 chatKey = 1;
         optional string content = 2;
         optional google.protobuf.Timestamp timestamp = 3;
     }
