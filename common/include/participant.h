@@ -33,6 +33,8 @@ public:
         registeredSince = QDateTime::currentDateTime();
     };
     ParticipantKey getKey() const { return key; }
+    QString getNickname() const { return name; }
+    QDateTime getEntryDate() const { return registeredSince; }
 
     void setNickname(QString name) { name = name; }
     void setEntryDate(QDateTime entryDate)
