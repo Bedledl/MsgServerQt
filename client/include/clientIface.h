@@ -16,42 +16,6 @@ public:
     }
 };
 
-class ParticipantNotFound : public std::exception
-{
-public:
-    virtual const char *what() const throw()
-    {
-        return "Participant not found.";
-    }
-};
-
-class ChatNotFound : public std::exception
-{
-public:
-    virtual const char *what() const throw()
-    {
-        return "Chat not found.";
-    }
-};
-
-class ChatAlreadyExists : public std::exception
-{
-public:
-    virtual const char *what() const throw()
-    {
-        return "Chat already exists.";
-    }
-};
-
-class ParticipantAlreadyExists : public std::exception
-{
-public:
-    virtual const char *what() const throw()
-    {
-        return "Participant already exists.";
-    }
-};
-
 class ClientIface
 {
 public:

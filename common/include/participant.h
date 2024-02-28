@@ -6,6 +6,24 @@
 
 typedef unsigned ParticipantKey;
 
+class ParticipantNotFound : public std::exception
+{
+public:
+    virtual const char *what() const throw()
+    {
+        return "Participant not found.";
+    }
+};
+
+class ParticipantAlreadyExists : public std::exception
+{
+public:
+    virtual const char *what() const throw()
+    {
+        return "Participant already exists.";
+    }
+};
+
 class Participant
 {
 public:

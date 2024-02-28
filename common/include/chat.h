@@ -14,6 +14,24 @@ class Participant;
 
 typedef unsigned ChatKey;
 
+class ChatNotFound : public std::exception
+{
+public:
+    virtual const char *what() const throw()
+    {
+        return "Chat not found.";
+    }
+};
+
+class ChatAlreadyExists : public std::exception
+{
+public:
+    virtual const char *what() const throw()
+    {
+        return "Chat already exists.";
+    }
+};
+
 class Chat : public QObject
 {
     Q_OBJECT
