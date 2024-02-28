@@ -1,8 +1,8 @@
 #include "clientMsgFormats.pb.h"
+#include "clientThreadIface.h"
 #include "communicators.h"
 #include "participant.h"
 #include "serverMsgFormats.pb.h"
-#include "clientThreadIface.h"
 #include <QString>
 
 void ServerCommunicator::buildGenericResponse(ServerCommand &cmdBuf, ResponseCode code)
@@ -34,7 +34,7 @@ std::string ServerCommunicator::answerMessage(std::string msg)
 
     case ClientCommandId::NewChat:
     {
-        auto newChatKey = clientThreadWorker.getParticipant().newChat();
+        auto newChatKey = clientThreadWorker.requestNewChat();
 
         outgoingCmd.set_cmd(ServerCommandId::ServerChatCommand);
         auto chatCmd = new ServerCommand_ServerChatCommand();
@@ -47,15 +47,6 @@ std::string ServerCommunicator::answerMessage(std::string msg)
         std::cout << "Client New Chat Cmd\n";
         break;
     }
-
-        // case ClientCommandId::GetChatKeys:
-        // {
-        //     // TODO
-        //     std::cout << "Client Get Chat Keys Cmd\n";
-        //     std::cout << "Acually, i don't want to use this method, because i want to prevent sending multiple chat keys at once?\n";
-
-        //     break;
-        // }
 
     case ClientCommandId::ClientGenericResponse:
     {
@@ -86,27 +77,48 @@ std::string ServerCommunicator::answerMessage(std::string msg)
     {
         auto chatCmd = incomingCmd.chatcmd();
         auto chatKey = chatCmd.chatkey();
+
+        // TODO int to unsigned
+        // ptofobuf usigned?
         switch (chatCmd.cmd())
         {
 
         case ClientChatCommandId::GetParticipantKeys:
         {
             std::cout << "Get Participant Keys\n";
-            // TODO
+            try
+            {
+                clientThreadWorker.requestChatParticipantKeys(chatKey);
+            }
+            catch (const std::exception &e)
+            {
+                buildGenericResponse(outgoingCmd, ResponseCode::ERROR);
+                break;
+            }
+            buildGenericResponse(outgoingCmd, ResponseCode::SUCCESS);
             break;
         }
 
         case ClientChatCommandId::LeaveChat:
         {
             std::cout << "Leave Chat\n";
-            // TODO
+            try
+            {
+                clientThreadWorker.requestLeavingChat(chatKey);
+            }
+            catch (const ChatNotFound &e)
+            {
+                buildGenericResponse(outgoingCmd, ResponseCode::ERROR);
+                break;
+            }
+            buildGenericResponse(outgoingCmd, ResponseCode::SUCCESS);
             break;
         }
 
         default:
         {
             std::cout << "Unknown Message\n";
-            // TODO send malformed apckages
+            buildGenericResponse(outgoingCmd, ResponseCode::MALFORMED_MESSAGE);
         }
         }
     }
@@ -115,49 +127,107 @@ std::string ServerCommunicator::answerMessage(std::string msg)
     case ClientCommandId::ClientParticipantCommand:
     {
         auto partCmd = incomingCmd.participantcmd();
+        auto participantKey = partCmd.participantkey();
         switch (partCmd.cmd())
         {
 
         case ClientParticipantCommandId::GetName:
         {
             std::cout << "Get Participant Name\n";
-            // TODO
+
+            auto participantCmd = new ServerCommand_ServerParticipantCommand();
+            participantCmd->set_cmd(ServerParticipantCommandId::SendName);
+            participantCmd->set_participantkey(participantKey);
+
+            try
+            {
+                auto name = clientThreadWorker.getServer().getParticipantName(participantKey);
+                participantCmd->set_name(name);
+            }
+            catch (const ParticipantNotFound &e)
+            {
+                qDebug() << e.what();
+                buildGenericResponse(outgoingCmd, ResponseCode::ERROR);
+                break;
+            }
+
+            outgoingCmd.set_cmd(ServerCommandId::ServerParticipantCommand);
+            outgoingCmd.set_allocated_participantcmd(participantCmd);
             break;
         }
 
         case ClientParticipantCommandId::GetEntryDate:
         {
             std::cout << "Get Participant Entry Date\n";
-            // TODO
+            auto participantCmd = new ServerCommand_ServerParticipantCommand();
+            participantCmd->set_cmd(ServerParticipantCommandId::SendName);
+            participantCmd->set_participantkey(participantKey);
+
+            try
+            {
+                auto qTs = clientThreadWorker.getServer().getParticipantEntryDate(participantKey);
+                auto ts = new google::protobuf::Timestamp();
+                ts->set_seconds(qTs.toSecsSinceEpoch());
+                participantCmd->set_allocated_timestamp(ts);
+            }
+            catch (const ParticipantNotFound &e)
+            {
+                buildGenericResponse(outgoingCmd, ResponseCode::ERROR);
+                break;
+            }
+
+            outgoingCmd.set_cmd(ServerCommandId::ServerParticipantCommand);
+            outgoingCmd.set_allocated_participantcmd(participantCmd);
             break;
         }
 
         case ClientParticipantCommandId::AddToChat:
         {
             std::cout << "Add Participant To Chat\n";
-            // TODO
+            auto chatKey = partCmd.chatkey();
+
+            try
+            {
+                auto chatPtr = clientThreadWorker.getParticipant().getChat(chatKey);
+                try
+                {
+                    clientThreadWorker.getServer().addParticipantToChat(chatPtr, participantKey);
+                    buildGenericResponse(outgoingCmd, ResponseCode::SUCCESS);
+                }
+                catch (const ParticipantNotFound &e)
+                {
+                    buildGenericResponse(outgoingCmd, ResponseCode::ERROR);
+                }
+                catch (const ParticipantAlreadyExists &e)
+                {
+                    buildGenericResponse(outgoingCmd, ResponseCode::ERROR);
+                }
+            }
+            catch (const ChatNotFound &e)
+            {
+                buildGenericResponse(outgoingCmd, ResponseCode::ERROR);
+                break;
+            }
+            break;
         }
         break;
 
         default:
         {
             std::cout << "Unknown Message\n";
-            // TODO
+            buildGenericResponse(outgoingCmd, ResponseCode::MALFORMED_MESSAGE);
         }
         }
+        break;
     }
 
     default:
     {
         std::cout << "Unknown Message\n";
-        // TODO
+        buildGenericResponse(outgoingCmd, ResponseCode::MALFORMED_MESSAGE);
     }
     }
-
-    ServerCommand outgoing;
-    outgoing.set_cmd(ServerCommandId::ServerGenericResponse);
-    sleep(10);
-    return outgoing.SerializeAsString();
+    return outgoingCmd.SerializeAsString();
 }
 
 QString ServerCommunicator::welcomeMessage()
