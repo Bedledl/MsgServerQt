@@ -114,7 +114,7 @@ void Server::addNewIncomingMessage(ChatKey key, std::string content, Participant
     auto participant = participants.find(participantKey);
     if (participant != participants.end())
     {
-        (*participant).second->newMessage(key, QString::fromStdString(content));
+        (*participant).second->newMessage(key, QString::fromStdString(content), timestamp);
     }
     else
     {
