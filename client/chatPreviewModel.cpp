@@ -16,11 +16,13 @@ QString ChatPreviewModel::chatName() const
 QString ChatPreviewModel::lastMessage() const
 {
     qDebug() << "ChatPreviewModel::lastMessage()";
-    try {
+    try
+    {
         auto lastMsg = chat->getLastMessage();
         return lastMsg.getContent();
     }
-    catch(const std::out_of_range&) {
+    catch (const std::out_of_range &)
+    {
         return "No messages yet.";
     }
 }
@@ -40,7 +42,7 @@ uint ChatPreviewModel::getChatKey() const
 
 void ChatPreviewListModel::addChat(Chat *chat)
 {
-    emit beginInsertRows(QModelIndex(), rowCount(), rowCount());
+    emit beginInsertRows(QModelIndex(), chatsPreviews.length(), chatsPreviews.length());
     chatsPreviews.append(new ChatPreviewModel(chat));
     emit endInsertRows();
 }
@@ -71,6 +73,8 @@ int ChatPreviewListModel::rowCount(const QModelIndex &parent) const
         qDebug() << "ChatPreviewListModel::rowCount()" << chatsPreviews.count();
         return chatsPreviews.count();
     }
+    // TODO why is the parent invalid most of the time???
+    return chatsPreviews.count();
     return 0;
 };
 
