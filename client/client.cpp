@@ -7,8 +7,8 @@
 #include <QObject>
 #include <QString>
 #include <QTcpSocket>
-#include <qqml.h>
 #include <memory>
+#include <qqml.h>
 
 #include <iostream>
 
@@ -21,10 +21,12 @@ Client::Client(QHostAddress ip, quint16 port, QString nickname, bool pingMode, Q
 
     if (pingMode)
     {
+        qDebug() << "Creating PingPongCommunicator";
         communicator = std::make_unique<PingPongCommunicator>();
     }
     else
     {
+        qDebug() << "Creating ClientCommunicator";
         communicator = std::make_unique<ClientCommunicator>(*this);
     }
     tcpSocket->connectToHost(ip, port);
@@ -56,20 +58,38 @@ void Client::readFromSocketAndAswer()
     if (!in.commitTransaction())
     {
         std::cout << "Error QDataStream Status: " << in.status() << std::endl;
+        in.abortTransaction();
         return;
     }
     QString msg;
     in >> msg;
 
-    std::cout << "read from socket and aswe4r" << std::endl;
+    std::cout << "read from socket and answer" << std::endl;
+
+    if (msg.length() == 0)
+    {
+        qDebug() << "empty message";
+        return;
+    }
 
     qDebug() << msg;
 
     auto answer = communicator->answerMessage(msg);
+    qDebug() << answer;
+
+    if (answer.length() == 0)
+    {
+        qDebug() << "empty answer, won't send it";
+        return;
+    }
 
     out << answer;
+
+    qDebug() << "block: " << block;
+
     auto written = tcpSocket->write(block);
-    std::cout << "wrote Ping to socket" << written << std::endl;
+
+    std::cout << "wrote Message to socket with length: " << written << std::endl;
 }
 
 void Client::addNewChat(const ChatKey &key)

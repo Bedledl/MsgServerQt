@@ -7,9 +7,9 @@
 #include <memory>
 
 #include "chat.h"
+#include "chatPreviewModel.h"
 #include "clientIface.h"
 #include "communicator.h"
-#include "chatPreviewModel.h"
 #include "participant.h"
 
 QT_BEGIN_NAMESPACE

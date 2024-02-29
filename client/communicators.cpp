@@ -19,6 +19,7 @@ std::string ClientCommunicator::answerMessage(std::string msg)
     case ServerCommandId::ServerGenericResponse:
     {
         qDebug() << "ServerGenericResponse";
+        return "";
         // TODO
         ;
         break;

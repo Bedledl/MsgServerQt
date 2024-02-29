@@ -123,4 +123,3 @@ const Message &Chat::getMessageAt(size_t index) const
     mutex.unlock();
     return r;
 }
-

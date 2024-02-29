@@ -70,6 +70,7 @@ std::string ServerCommunicator::answerMessage(std::string msg)
             std::cout << "Unknown Response Code\n";
         }
         // TODO
+        return "";
     }
     break;
 
