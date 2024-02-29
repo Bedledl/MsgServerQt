@@ -92,6 +92,13 @@ public:
      */
     void removeParticipant(ParticipantKey participantKey);
     /**
+     * @brief Remove participant from the chat.
+     *
+     * @param participant: shared pointer to Participant that should be removed from chat participants
+     * @throw ParticipantNotFound: if participant was not found in participant list of chat
+     */
+    void removeParticipant(std::shared_ptr<Participant> participant);
+    /**
      * @brief Returns the last message in the chat.
      *
      * @return const Message& The reference to the last message.
