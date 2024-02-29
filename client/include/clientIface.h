@@ -29,6 +29,7 @@ public:
     virtual void addParticipantToChat(const ChatKey &chatKey, const ParticipantKey &participantKey) = 0;
     virtual void removeParticipantFromChat(const ChatKey &chatKey, const ParticipantKey &participantKey) = 0;
     virtual QString getNickname() const = 0;
+    virtual bool participantIsRegistered(const ParticipantKey &key) const = 0;
 };
 
 #endif /* ADFA9B81_CD9E_4260_ABAD_8AD7EE71BE2D */

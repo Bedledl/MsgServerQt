@@ -37,7 +37,21 @@ public:
         }
         /// @brief should be called from the Client thread when the clients sent a new message
         void newMessage(ChatKey chat_key, QString content) { qDebug("NotImplemented yet"); };
-        void getParticipantKeys(ChatKey chatKey) { qDebug("NotImplemented yet"); };
+        std::vector<ParticipantKey> getParticipantKeys(ChatKey chatKey)
+        {
+                auto chat = std::find_if(chats.begin(), chats.end(), [&chatKey](std::shared_ptr<ServerChat> &chat)
+                                         { return chat->getKey() == chatKey; });
+                if (chat != chats.end())
+                {
+                        auto keys = (*chat)->getParticipantKeys();
+                        return keys;
+                }
+                else
+                {
+                        qDebug() << "ServerParticipant::getParticipantKeys: Chat not found";
+                        throw ChatNotFound();
+                }
+        };
         void leaveChat(ChatKey chatKey)
         {
                 auto chat = std::find_if(chats.begin(), chats.end(), [&chatKey](std::shared_ptr<ServerChat> &chat)

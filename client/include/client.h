@@ -30,6 +30,7 @@ public:
     void addParticipantToChat(const ChatKey &chatKey, const ParticipantKey &participantKey) override;
     void removeParticipantFromChat(const ChatKey &chatKey, const ParticipantKey &participantKey) override;
     QString getNickname() const override { return nickname; }
+    bool participantIsRegistered(const ParticipantKey &key) const override;
 
 private slots:
     void readFromSocketAndAswer();

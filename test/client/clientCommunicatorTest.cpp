@@ -109,6 +109,10 @@ public:
             throw ParticipantNotFound();
         }
     };
+    virtual bool participantIsRegistered(const ParticipantKey &key) const
+    {
+        return std::find(participantKeys.begin(), participantKeys.end(), key) != participantKeys.end();
+    }
 
 private:
     std::vector<ChatKey> chatKeys = {};
@@ -133,6 +137,7 @@ public:
     MOCK_METHOD(void, assignParticipantEntryDate, (const ParticipantKey &key, QDateTime entryDate), (override));
     MOCK_METHOD(void, addParticipant, (const ParticipantKey &key), (override));
     MOCK_METHOD(void, removeParticipant, (const ParticipantKey &key), (override));
+    MOCK_METHOD(bool, participantIsRegistered, (const ParticipantKey &key), (const, override));
 
     void DelegateToFake()
     {
@@ -156,6 +161,8 @@ public:
                                                            { return fake_.addParticipantToChat(chatKey, participantKey); });
         ON_CALL(*this, removeParticipantFromChat).WillByDefault([this](const ChatKey &chatKey, const ParticipantKey &participantKey)
                                                                 { return fake_.removeParticipantFromChat(chatKey, participantKey); });
+        ON_CALL(*this, participantIsRegistered).WillByDefault([this](const ParticipantKey &key)
+                                                             { return fake_.participantIsRegistered(key); });
     }
 
 private:
@@ -172,7 +179,8 @@ protected:
     std::string participantName = "Romeo";
     std::string testMessageContent = "Dear Juliet. Please wait for me in the garden.";
     QDateTime timestamp = QDateTime::currentDateTime();
-    TestServerCommunicator serverMsgGenerator{chatKey, participantKey, participantName, testMessageContent, timestamp};
+    std::vector<unsigned> participantKeys = {273, 48, 1235, 9};
+    TestServerCommunicator serverMsgGenerator{chatKey, participantKey, participantName, testMessageContent, timestamp, participantKeys};
 
     /**
      * @brief This is just a helper method to reduce redundant code. Gets the response code for a server message. Expeccts that the client communicator sends a generic response.
@@ -371,5 +379,20 @@ TEST_F(ClientCommunicatorTest, AssignParticipantEntryDate)
     getResponseCode(serverMsgGenerator.getParticipantAddedCmd());
 
     response = getResponseCode(serverMsgGenerator.getParticipantEntryDateCmd());
+    EXPECT_EQ(response, ResponseCode::SUCCESS);
+}
+
+TEST_F(ClientCommunicatorTest, RequestChatParticipantKeys)
+{
+    EXPECT_CALL(client, addNewChat(chatKey)).Times(1);
+    EXPECT_CALL(client, addParticipantToChat(chatKey, participantKey)).Times(participantKeys.size());
+
+    auto response = getResponseCode(serverMsgGenerator.getParticipantKeys());
+    EXPECT_EQ(response, ResponseCode::ERROR);
+
+    getResponseCode(serverMsgGenerator.getAddedToChatCmd());
+    // TODO maybe have to register all participants first
+
+    response = getResponseCode(serverMsgGenerator.getParticipantKeys());
     EXPECT_EQ(response, ResponseCode::SUCCESS);
 }

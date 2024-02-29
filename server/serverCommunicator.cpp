@@ -88,9 +88,18 @@ std::string ServerCommunicator::answerMessage(std::string msg)
             std::cout << "Get Participant Keys\n";
             try
             {
-                clientThreadWorker.requestChatParticipantKeys(chatKey);
+                auto keys = clientThreadWorker.requestChatParticipantKeys(chatKey);
+
+                auto partKeysList = new ServerCommand_ServerParticipantKeyListCommand();
+                partKeysList->set_chatkey(chatKey);
+                for (auto key : keys)
+                {
+                    partKeysList->add_participantkeys(key);
+                }
+                outgoingCmd.set_cmd(ServerCommandId::ServerParticipantKeyListCommand);
+                outgoingCmd.set_allocated_participantkeylist(partKeysList);
             }
-            catch (const std::exception &e)
+            catch (const ChatNotFound &e)
             {
                 buildGenericResponse(outgoingCmd, ResponseCode::ERROR);
                 break;

@@ -6,8 +6,8 @@
 
 #include <iostream>
 
-TestServerCommunicator::TestServerCommunicator(int chatKey, int participantKey, std::string participantName, std::string testMessageContent, QDateTime timestamp)
-    : chatKey(chatKey), participantKey(participantKey), participantName(participantName), testMessageContent(testMessageContent), timestamp(timestamp) {}
+TestServerCommunicator::TestServerCommunicator(int chatKey, int participantKey, std::string participantName, std::string testMessageContent, QDateTime timestamp, std::vector<unsigned> participantKeys)
+    : chatKey(chatKey), participantKey(participantKey), participantName(participantName), testMessageContent(testMessageContent), timestamp(timestamp), participantKeys(participantKeys) {}
 
 std::string TestServerCommunicator::getAddedToChatCmd()
 {
@@ -147,5 +147,22 @@ std::string TestServerCommunicator::getParticipantLeftChatCmd()
     chatCmd->set_participantkey(participantKey);
 
     serverCmd.set_allocated_chatcmd(chatCmd);
+    return serverCmd.SerializeAsString();
+}
+
+std::string TestServerCommunicator::getParticipantKeys()
+{
+    ServerCommand serverCmd;
+    serverCmd.set_cmd(ServerCommandId::ServerParticipantKeyListCommand);
+
+    auto keyList = new ServerCommand_ServerParticipantKeyListCommand();
+    keyList->set_chatkey(chatKey);
+
+    for (auto key : participantKeys)
+    {
+        keyList->add_participantkeys(key);
+    }
+
+    serverCmd.set_allocated_participantkeylist(keyList);
     return serverCmd.SerializeAsString();
 }

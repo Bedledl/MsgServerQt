@@ -50,3 +50,11 @@ void Chat::removeParticipant(ParticipantKey participantKey)
         throw ParticipantNotFound();
     }
 };
+
+std::vector<ParticipantKey> Chat::getParticipantKeys()
+{
+    std::vector<ParticipantKey> keys;
+    std::transform(participants.begin(), participants.end(), std::back_inserter(keys), [](std::shared_ptr<Participant> &participant)
+                   { return participant->getKey(); });
+    return keys;
+}

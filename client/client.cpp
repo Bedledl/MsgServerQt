@@ -166,3 +166,8 @@ void Client::removeParticipantFromChat(const ChatKey &chatKey, const Participant
         throw ChatNotFound();
     }
 }
+
+bool Client::participantIsRegistered(const ParticipantKey &key) const
+{
+    return registeredParticipants.contains(key);
+}

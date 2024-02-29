@@ -23,9 +23,10 @@ public:
     {
         participant->leaveChat(key);
     }
-    void requestChatParticipantKeys(ChatKey &key) override
+    std::vector<ParticipantKey> requestChatParticipantKeys(ChatKey &key) override
     {
         qDebug() << "requestChatParticipantKeys: Not implemented yet";
+        return participant->getParticipantKeys(key);
     }
     ChatKey requestNewChat() override
     {

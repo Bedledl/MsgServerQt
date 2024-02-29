@@ -44,6 +44,7 @@ public:
     void addParticipant(std::shared_ptr<Participant> participant);
     void removeParticipant(std::shared_ptr<Participant> participant);
     void removeParticipant(ParticipantKey participantKey);
+    std::vector<ParticipantKey> getParticipantKeys();
 
 public slots:
     void add_message(Message msg);

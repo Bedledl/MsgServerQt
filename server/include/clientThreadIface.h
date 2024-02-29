@@ -19,7 +19,7 @@ public:
     }
     virtual void setNickname(std::string) = 0;
     virtual void requestLeavingChat(ChatKey &key) = 0;
-    virtual void requestChatParticipantKeys(ChatKey &key) = 0;
+    virtual std::vector<ParticipantKey> requestChatParticipantKeys(ChatKey &key) = 0;
     virtual ChatKey requestNewChat() = 0;
     const Server &getServer() const { return server; }
     ServerParticipant &getParticipant() const { return *participant; }

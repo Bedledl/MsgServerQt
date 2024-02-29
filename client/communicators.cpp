@@ -195,6 +195,40 @@ std::string ClientCommunicator::answerMessage(std::string msg)
         return generateGenericResponseString(ResponseCode::SUCCESS);
         break;
     }
+    case ServerCommandId::ServerParticipantKeyListCommand:
+    {
+        auto partKeysList = incomingCmd.participantkeylist();
+        auto keys = partKeysList.participantkeys();
+        auto chatKey = partKeysList.chatkey();
+
+        for (auto &key : keys)
+        {
+            if (!client.participantIsRegistered(key))
+            {
+                return generateGenericResponseString(ResponseCode::ERROR);
+            }
+        }
+
+        for (auto &key : keys)
+        {
+
+            try
+            {
+                client.addParticipantToChat(chatKey, key);
+            }
+            catch (ParticipantAlreadyExists &e)
+            {
+                continue;
+            }
+            catch (const ChatNotFound &e)
+            {
+                return generateGenericResponseString(ResponseCode::ERROR);
+            }
+        }
+
+        return generateGenericResponseString(ResponseCode::SUCCESS);
+        break;
+    }
     default:
     {
         qDebug() << "return malformed message";
