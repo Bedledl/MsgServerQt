@@ -7,7 +7,7 @@ qt_add_qml_module(clientGui
         ChatPreview.qml
         ChatView.qml
         GradientText.qml
-        Client.qml
+        ClientView.qml
         Message.qml
         ChatPreviewList.qml
     RESOURCES

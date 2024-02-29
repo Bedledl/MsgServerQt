@@ -18,6 +18,7 @@ std::string ClientCommunicator::answerMessage(std::string msg)
     {
     case ServerCommandId::ServerGenericResponse:
     {
+        qDebug() << "ServerGenericResponse";
         // TODO
         ;
         break;
@@ -29,6 +30,7 @@ std::string ClientCommunicator::answerMessage(std::string msg)
         {
         case ServerChatCommandId::AddedToChat:
         {
+            qDebug() << "AddedToChat";
             try
             {
                 client.addNewChat(chatCmd.chatkey());
@@ -43,6 +45,7 @@ std::string ClientCommunicator::answerMessage(std::string msg)
         }
         case ServerChatCommandId::LeftChat:
         {
+            qDebug() << "LeftChat";
             try
             {
                 client.leaveChat(chatCmd.chatkey());

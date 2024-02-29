@@ -1,4 +1,5 @@
 #include "include/client.h"
+#include "include/chatPreviewModel.h"
 #include "include/communicators.h"
 
 #include <QDebug>
@@ -6,6 +7,7 @@
 #include <QObject>
 #include <QString>
 #include <QTcpSocket>
+#include <qqml.h>
 
 #include <iostream>
 
@@ -35,6 +37,10 @@ Client::Client(QHostAddress ip, quint16 port, QString nickname, bool pingMode, Q
             [&](QAbstractSocket::SocketError socketError)
             { qDebug() << tcpSocket->errorString(); });
     out << communicator->welcomeMessage();
+    nickname = "Juliet";
+    remoteIpString = ip.toString();
+    remotePort = port;
+    chatPreviewListModel = new ChatPreviewListModel(&chats, this);
 }
 
 void Client::readFromSocketAndAswer()
@@ -73,6 +79,7 @@ void Client::addNewChat(const ChatKey &key)
     }
     auto newChat = new Chat(key, this);
     chats.insert(key, newChat);
+    chatPreviewListModel->addChat(newChat);
 }
 void Client::leaveChat(const ChatKey &key)
 {
@@ -171,3 +178,7 @@ bool Client::participantIsRegistered(const ParticipantKey &key) const
 {
     return registeredParticipants.contains(key);
 }
+
+inline QString Client::getNickname() const { return nickname; }
+inline int Client::getPort() const { return remotePort; }
+inline QString Client::getIp() const { return remoteIpString; }

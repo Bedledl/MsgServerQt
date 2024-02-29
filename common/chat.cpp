@@ -58,3 +58,16 @@ std::vector<ParticipantKey> Chat::getParticipantKeys()
                    { return participant->getKey(); });
     return keys;
 }
+
+const Message *Chat::get_last_message() const
+{
+    qDebug() << "Chat::get_last_message()";
+    if (messages.empty())
+    {
+        qDebug() << "Chat::get_last_message() empty";
+        return nullptr;
+    }
+    qDebug() << "Chat::get_last_message() not empty";
+    return &(*messages.begin());
+}
+

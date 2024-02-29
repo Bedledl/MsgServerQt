@@ -34,11 +34,13 @@ class Chat : public QObject
 {
     Q_OBJECT
 
-    std::set<Message> messages = {};
-
 public:
-    Chat(ChatKey key, QObject *parent = nullptr) : QObject(parent), key(key){};
+    Chat(ChatKey key, QObject *parent = nullptr) : QObject(parent), key(key)
+    {
+        messages = std::set<Message>();
+    };
     void foreach_do(std::function<void(const Message &)> func);
+    const Message *get_last_message() const;
     ChatKey getKey() const { return key; };
     void addMessage(QString content, std::shared_ptr<Participant> sender, QDateTime timestamp);
     void addParticipant(std::shared_ptr<Participant> participant);
@@ -54,6 +56,7 @@ signals:
 
 protected:
     const ChatKey key;
+    std::set<Message> messages;
     std::vector<std::shared_ptr<Participant>> participants;
 };
 

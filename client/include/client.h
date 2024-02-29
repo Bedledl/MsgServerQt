@@ -8,6 +8,7 @@
 #include "chat.h"
 #include "clientIface.h"
 #include "communicator.h"
+#include "chatPreviewModel.h"
 #include "participant.h"
 
 QT_BEGIN_NAMESPACE
@@ -18,6 +19,10 @@ QT_END_NAMESPACE
 class Client : public QObject, public ClientIface
 {
     Q_OBJECT
+    Q_PROPERTY(QString nickname READ getNickname CONSTANT)
+    Q_PROPERTY(int port READ getPort CONSTANT)
+    Q_PROPERTY(QString ip READ getIp CONSTANT)
+    Q_PROPERTY(ChatPreviewListModel *CPLmodel READ getChatPreviewListModel CONSTANT)
 public:
     explicit Client(QHostAddress ip, quint16 port, QString nickname, bool pingMode, QObject *parent = nullptr);
     void addNewChat(const ChatKey &key) override;
@@ -31,6 +36,11 @@ public:
     void removeParticipantFromChat(const ChatKey &chatKey, const ParticipantKey &participantKey) override;
     QString getNickname() const override { return nickname; }
     bool participantIsRegistered(const ParticipantKey &key) const override;
+    int getPort() const;
+    QString getIp() const;
+    auto getChatPreviewListModel() { return chatPreviewListModel; };
+signals:
+    void chatPreviewListChanged();
 
 private slots:
     void readFromSocketAndAswer();
@@ -45,6 +55,9 @@ private:
     std::unique_ptr<Communicator> communicator;
     QMap<ChatKey, Chat *> chats;
     QMap<ParticipantKey, std::shared_ptr<Participant>> registeredParticipants;
+    QString remoteIpString;
+    quint16 remotePort;
+    ChatPreviewListModel *chatPreviewListModel;
 };
 
 #endif
