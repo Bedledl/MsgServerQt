@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <ranges>
 
 #include "chat.h"
 #include "participant.h"
@@ -16,7 +17,7 @@ void Chat::addMessage(Message msg)
 {
     mutex.lockForRead();
     auto sender = msg.getSender();
-    if (!participants.contains(sender))
+    if (std::ranges::find(participants, sender)== participants.end() )
     {
         mutex.unlock();
         throw SenderNotChatParticipant();
