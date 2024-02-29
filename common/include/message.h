@@ -82,9 +82,9 @@ public:
     QString getSenderString() const;
 
 private:
+    QString content;                           ///< The content of the message.
     const std::shared_ptr<Participant> sender; ///< The participant who sent the message.
     QDateTime sentDateTime;                    ///< The timestamp when the message was sent.
-    QString content;                           ///< The content of the message.
 };
 
 #endif
