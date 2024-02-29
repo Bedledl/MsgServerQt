@@ -112,7 +112,7 @@ const Message &Chat::getLastMessage() const
 const Message &Chat::getMessageAt(size_t index) const
 {
     mutex.lockForRead();
-    if (index < 0 || index >= messages.size())
+    if (index >= messages.size())
     {
         mutex.unlock();
         std::stringstream ss;
