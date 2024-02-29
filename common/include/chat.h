@@ -77,15 +77,6 @@ public:
      */
     ChatKey getKey() const { return key; };
     /**
-     * @brief Adds a message to the chat.
-     *
-     * This function adds a message to the chat. The message is represented by a Message object.
-     * Consider using move semantics to avoid copying the message.
-     *
-     * @param msg The message to be added.
-     */
-    void addMessage(QString content, std::shared_ptr<Participant> sender, QDateTime timestamp);
-    /**
      * @brief Adds a participant to the chat.
      *
      * This function adds a participant to the chat. The participant is represented by a shared pointer to a Participant object.
