@@ -7,7 +7,7 @@
 
 int ChatViewModel::rowCount(const QModelIndex &parent) const
 {
-    return messages.size();
+    return chat.getMessagesCount();
 }
 
 QVariant ChatViewModel::data(const QModelIndex &index, int role) const
@@ -21,9 +21,14 @@ QVariant ChatViewModel::data(const QModelIndex &index, int role) const
     {
     case Qt::DisplayRole:
     {
-        auto it = messages.begin();
-        std::advance(it, index.row());
-        return QVariant::fromValue(new MessageModelItem(&(*it)));
+        try {
+            auto message = chat.getMessageAt(index.row());
+        return QVariant::fromValue(new MessageModelItem(&message));
+        } catch (std::out_of_range &e) {
+            qDebug() << "ChatViewModel::data() requested data which is out of range";
+            return QVariant();
+        }
+
     }
     default:
         return "default role string";
