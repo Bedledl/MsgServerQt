@@ -64,7 +64,8 @@ void Chat::addParticipant(std::shared_ptr<Participant> participant)
     }
     participants.emplace_back(std::move(participant));
     mutex.unlock();
-};
+}
+
 void Chat::removeParticipant(std::shared_ptr<Participant> participant)
 {
     mutex.lockForWrite();
@@ -75,7 +76,8 @@ void Chat::removeParticipant(std::shared_ptr<Participant> participant)
         throw ParticipantNotFound();
     }
     mutex.unlock();
-};
+}
+
 void Chat::removeParticipant(ParticipantKey participantKey)
 {
     auto countErased = std::erase_if(participants, [participantKey](std::shared_ptr<Participant> &participant)
@@ -84,7 +86,7 @@ void Chat::removeParticipant(ParticipantKey participantKey)
     {
         throw ParticipantNotFound();
     }
-};
+}
 
 std::vector<ParticipantKey> Chat::getParticipantKeys()
 {
