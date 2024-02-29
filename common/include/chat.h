@@ -5,8 +5,8 @@
 #include <QObject>
 #include <QReadWriteLock>
 
-#include <set>
 #include <memory>
+#include <set>
 
 #include "message.h"
 #include "participant.h"
