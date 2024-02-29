@@ -37,7 +37,7 @@ public:
     void assignParticipantEntryDate(const ParticipantKey &key, QDateTime entryDate) override;
     void addParticipantToChat(const ChatKey &chatKey, const ParticipantKey &participantKey) override;
     void removeParticipantFromChat(const ChatKey &chatKey, const ParticipantKey &participantKey) override;
-    QString getNickname() const override { return nickname; }
+    QString getNickname() const override;
     bool participantIsRegistered(const ParticipantKey &key) const override;
     int getPort() const;
     QString getIp() const;
