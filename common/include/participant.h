@@ -70,11 +70,6 @@ public:
      */
     QDateTime getEntryDate() const { return registeredSince; }
 
-    /**
-     * @brief Returns the participant's name.
-     *
-     * @return The participant's name as QString.
-     */
     QString getNickname() const { return name; }
 
     /**
