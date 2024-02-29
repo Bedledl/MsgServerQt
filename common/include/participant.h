@@ -70,8 +70,6 @@ public:
      */
     QDateTime getEntryDate() const { return registeredSince; }
 
-    QString getNickname() const { return name; }
-
     /**
      * @brief Sets the participant's name.
      *
