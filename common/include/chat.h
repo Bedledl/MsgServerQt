@@ -114,6 +114,12 @@ public:
      */
     const Message &getMessageAt(size_t index) const;
     std::vector<ParticipantKey> getParticipantKeys();
+    /**
+     * @brief Returns the number of messages in the chat.
+     *
+     * @return size_t The number of messages in the chat.
+     */
+    size_t getMessagesCount() const { return messages.size(); };
 
 public slots:
     /**

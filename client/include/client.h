@@ -24,6 +24,7 @@ class Client : public QObject, public ClientIface
     Q_PROPERTY(int port READ getPort CONSTANT)
     Q_PROPERTY(QString ip READ getIp CONSTANT)
     Q_PROPERTY(ChatPreviewListModel *CPLmodel READ getChatPreviewListModel CONSTANT)
+    Q_PROPERTY(ChatViewModel *CVmodel READ getChatViewModel CONSTANT)
     Q_PROPERTY(int selectedChat READ selectedChat WRITE setSelectedChat NOTIFY selectedChatChanged);
 
 public:
@@ -42,6 +43,16 @@ public:
     int getPort() const;
     QString getIp() const;
     auto getChatPreviewListModel() { return chatPreviewListModel.get(); };
+    ChatViewModel *getChatViewModel()
+    {
+        if (selectedChatIndex != -1)
+        {
+            auto it = chats.begin();
+            std::advance(it, selectedChatIndex);
+            return new ChatViewModel(*(it.value()), this);
+        }
+        return nullptr;
+    };
     int selectedChat() const { return selectedChatIndex; };
     void setSelectedChat(int selectedChat)
     {

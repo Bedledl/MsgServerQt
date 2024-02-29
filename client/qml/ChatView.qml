@@ -30,7 +30,7 @@ Rectangle {
                 Layout.fillWidth: true
                 Layout.verticalStretchFactor: 8
                 snapMode: ListView.SnapToItem
-                model: 100
+                model: clientCppObj.CVmodel
                 clip: true
                 delegate: Message {}
                 spacing: 2

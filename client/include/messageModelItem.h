@@ -5,29 +5,20 @@
 
 #include "message.h"
 
-class MessageModelItem
+class MessageModelItem : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(string content READ getContent CONSTANT);
+    Q_PROPERTY(QString content READ getContent CONSTANT);
     Q_PROPERTY(QDateTime timestamp READ getTimestamp CONSTANT);
-    Q_PROPERTY(string sender READ getSender CONSTANT);
+    Q_PROPERTY(QString sender READ getSender CONSTANT);
 
 public:
-    MessageModelItem(const Message *message) : message(message){};
+    MessageModelItem(const Message *message, QObject *parent = nullptr) : QObject(parent), message(message){};
 
 private:
-    QString getContent() const
-    {
-        return message->getContent();
-    }
-    QDateTime getTimestamp() const
-    {
-        return message->getQTimestamp();
-    }
-    QString getSender() const
-    {
-        return message->getSenderString();
-    }
+    QString getContent() const;
+    QDateTime getTimestamp() const;
+    QString getSender() const;
     const Message *message;
 };
 #endif /* BCA63783_3916_45EC_BB00_2B73D19903E5 */
