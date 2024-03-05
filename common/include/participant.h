@@ -4,7 +4,7 @@
 #include <QString>
 #include <cstdint>
 
-typedef uint8_t ParticipantKey;
+#include "uniqueKeysTypedef.h"
 
 class Participant
 {

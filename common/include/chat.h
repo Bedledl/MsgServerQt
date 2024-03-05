@@ -7,8 +7,8 @@
 #include <set>
 
 #include "message.h"
+#include "uniqueKeysTypedef.h"
 
-typedef uint8_t ChatKey;
 
 class Chat : public QObject
 {
