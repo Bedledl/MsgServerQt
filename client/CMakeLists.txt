@@ -1,6 +1,7 @@
 add_library(Client STATIC
 ${CMAKE_CURRENT_SOURCE_DIR}/client.cpp
 ${CMAKE_CURRENT_SOURCE_DIR}/tcpClientConnector.cpp
+${CMAKE_CURRENT_SOURCE_DIR}/clientMessageBuilder.cpp
 )
 
 target_include_directories(Client PUBLIC
