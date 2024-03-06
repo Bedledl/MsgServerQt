@@ -45,6 +45,7 @@ add_subdirectory(connConfigurator)
 add_subdirectory(common)
 add_subdirectory(server)
 add_subdirectory(client)
+add_subdirectory(test)
 target_link_libraries(LaunchServer Server Qt6::Network Qt6::Widgets)
 target_link_libraries(LaunchClient Client Qt6::Network Qt6::Widgets)
 
