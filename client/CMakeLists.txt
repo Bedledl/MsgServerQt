@@ -1,3 +1,4 @@
+
 add_library(Client STATIC
 ${CMAKE_CURRENT_SOURCE_DIR}/client.cpp
 ${CMAKE_CURRENT_SOURCE_DIR}/tcpClientConnector.cpp
