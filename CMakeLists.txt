@@ -10,7 +10,6 @@ if(NOT CMAKE_BUILD_TYPE)
     set (CMAKE_BUILD_TYPE Release)
 endif()
 
-set(AUTOMOC ON) # sannsyngligvis unnötig
 set(CMAKE_AUTOMOC ON)
 
 set(CMAKE_CXX_FLAGS "-Wall -Wextra")
@@ -48,8 +47,5 @@ add_subdirectory(client)
 add_subdirectory(test)
 target_link_libraries(LaunchServer Server Qt6::Network Qt6::Widgets)
 target_link_libraries(LaunchClient Client Qt6::Network Qt6::Widgets)
-
-set_property(TARGET LaunchServer PROPERTY AUTOMOC ON)
-
 
 install(TARGETS LaunchServer DESTINATION bin)
