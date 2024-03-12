@@ -34,6 +34,9 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
+    - name: Clone own modified clang tidy action
+      run: git clone https://github.com/Bedledl/action-clang-tidy.git
+
     - name: Install Conan
       id: conan
       uses: turtlebrowser/get-conan@main
@@ -82,3 +85,12 @@ jobs:
       name: Build compressed conan cache to be stored by the Github action cache
       run: conan cache save "*/*:*" --file=${{github.workspace}}/${{ env.CONAN_CACHE_SAVE_FILE}}
 
+    - name: Run clang-tidy
+      uses: ./action-clang-tidy
+      with:
+        scandir: '.'
+        builddir: 'build/build/${{ env.BUILD_TYPE }}'
+        excludedirs: 'CMakeModules,CMakeFiles,build'
+        extensions: 'c,h,C,H,cpp,hpp,cc,hh,c++,h++,cxx,hxx'
+        useexistingbuild: true
+      continue-on-error: true
