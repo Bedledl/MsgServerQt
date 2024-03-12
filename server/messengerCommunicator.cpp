@@ -1,6 +1,6 @@
-#include <QString>
 #include "communicators.h"
+#include <QString>
 
-QString MessengerCommunicator::answerMessage(QString msg) {
-    
+QString MessengerCommunicator::answerMessage(QString msg)
+{
 }

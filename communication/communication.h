@@ -1,7 +1,9 @@
 #include <cstdint>
 
-namespace Communication {
-    enum Command : uint8_t {
+namespace Communication
+{
+    enum Command : uint8_t
+    {
         setName,
         newChat,
         getChatKeys,
@@ -13,12 +15,10 @@ namespace Communication {
         addToChat
     };
 
-    
-
-    struct PromptHeader {
+    struct PromptHeader
+    {
         Command command;
         uint8_t legnth;
     };
-
 
 }
