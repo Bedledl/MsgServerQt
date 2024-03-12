@@ -14,6 +14,20 @@ env:
   CONAN_CACHE_SAVE_FILE: conan_cache_save.tgz
 
 jobs:
+  checks-without-building:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Run Clang Format Check
+      uses: jidicula/clang-format-action@v4.11.0
+      with:
+        clang-format-version: '14'
+
+    - if: success()
+      name: Print success
+      run: echo "Clang format check passed"
+
   build:
     runs-on: ubuntu-latest
 
