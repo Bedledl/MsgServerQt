@@ -17,8 +17,9 @@ class ChatGui : public QWidget
     // don't use shared or unique, because chats should be only owned by ClientThreadWorkers
     Chat *chat;
     QVector<QLabel *> message_texts;
+
 public:
-    ChatGui(QWidget * parent, Chat * chat);
+    ChatGui(QWidget *parent, Chat *chat);
 
 public slots:
     void chatsChanged();

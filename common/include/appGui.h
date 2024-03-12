@@ -12,7 +12,7 @@ class AppGui : public QDialog
 {
     Q_OBJECT
 
-     QVector<ChatGui *> chats;
+    QVector<ChatGui *> chats;
 
 public:
     AppGui(QWidget *parent = nullptr) : QDialog(parent){};

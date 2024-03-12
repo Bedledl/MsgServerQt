@@ -1,5 +1,3 @@
 
 
 #include "communicator.h"
-
-

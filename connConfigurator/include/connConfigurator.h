@@ -10,7 +10,7 @@ protected:
     quint16 port;
 
 public:
-    virtual ~ConnConfigurator() {};
+    virtual ~ConnConfigurator(){};
     virtual std::pair<QString, quint16> retrieveConnectionConfiguration() = 0;
 };
 
