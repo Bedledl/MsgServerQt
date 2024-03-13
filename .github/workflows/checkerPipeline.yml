@@ -11,6 +11,7 @@ env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
   BUILD_TYPE: Release
   BUILD_TYPE_LC: release
+  CONAN_CACHE_SAVE_FILE: conan_cache_save.tgz
 
 jobs:
   build:
@@ -32,6 +33,38 @@ jobs:
     - name: Print conan profiles
       run: conan profile list
 
+    - name: Cache conan installed packages
+      id: cache-deps
+      uses: actions/cache@v3
+      env:
+        cache-name: cache-deps
+      with:
+        path: ${{github.workspace}}/${{ env.CONAN_CACHE_SAVE_FILE}}
+        key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ env.BUILD_TYPE_LC }}-${{ hashFiles('conanfile.py') }}
+        restore-keys: |
+          ${{ runner.os }}-build-${{ env.cache-name }}-${{ env.BUILD_TYPE_LC }}-
+          ${{ runner.os }}-build-${{ env.cache-name }}-
+          ${{ runner.os }}-build-
+          ${{ runner.os }}-
+
+    - if: ${{ steps.cache-deps.outputs.cache-hit != 'true' }}
+      name: Print loading cache unsuccessful
+      continue-on-error: true
+      run: echo "Could not restore cache"
+
+    - if: ${{ steps.cache-deps.outputs.cache-hit == 'true' }}
+      name: Print loading cache successful
+      continue-on-error: true
+      run: echo "Could restore cache"
+
+    - if: ${{ steps.cache-deps.outputs.cache-hit == 'true' }}
+      name: Restore conan cache from compressed file
+      run: conan cache restore ${{github.workspace}}/${{ env.CONAN_CACHE_SAVE_FILE}}
+
     - name: Install dependencies
       run: conan build -pr:a defaultLinux --output-folder=build --build=missing -s build_type=${{ env.BUILD_TYPE }} -c tools.system.package_manager:mode=install -c tools.system.package_manager:sudo=True .
+
+    - if: ${{ steps.cache-deps.outputs.cache-hit != 'true' }}
+      name: Build compressed conan cache to be stored by the Github action cache
+      run: conan cache save "*/*:*" --file=${{github.workspace}}/${{ env.CONAN_CACHE_SAVE_FILE}}
 
