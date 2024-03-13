@@ -1,0 +1,11 @@
+---
+Checks: "*, \
+  -llvmlibc*, \
+  -altera*, \
+  -fuchsia-*, \
+  -llvm-header-guard, \
+  -google-readability-todo, \
+  -bugprone-easily-swappable-parameters, \
+  -modernize-use-trailing-return-type"
+HeaderFilterRegex: ""
+...
