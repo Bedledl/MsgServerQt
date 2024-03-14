@@ -1,0 +1,67 @@
+syntax = "proto3";
+
+import "proto/serverClientCommunication.proto";
+import "google/protobuf/timestamp.proto";
+
+enum ServerCommandId {
+    ServerGenericResponse           = 0;
+    ServerChatCommand               = 1;
+    ServerParticipantCommand        = 2;
+    ServerMessageCommand            = 3;
+    ServerParticipantKeyListCommand = 4;
+}
+
+enum ServerChatCommandId {
+    AddedToChat            = 0;  // the client was added to a chat
+    LeftChat               = 1;  // the client was removed from a chat
+    ParticipantAddedToChat = 2;  // a participant was added to a chat, that the client is in
+    ParticipantLeftChat    = 3;  // a participant left a chat that the cliet is in
+}
+
+enum ServerParticipantCommandId {
+    Added         = 0;
+    Removed       = 1;
+    SendName      = 2;
+    SendEntryDate = 3;
+}
+
+message ServerCommand {
+    message ServerChatCommand {
+        optional uint32              chatKey        = 1;
+        optional ServerChatCommandId cmd            = 2;
+        optional uint32              participantKey = 3;  // this is for when another participant is added to a spcific chat's participants.
+        // This functionality is not implemented yet
+    }
+
+    message ServerParticipantCommand {
+        optional uint32                     participantKey = 1;
+        optional ServerParticipantCommandId cmd            = 2;
+        oneof                               info {
+            string                    name      = 3;
+            google.protobuf.Timestamp timestamp = 4;
+        }
+    }
+
+    message ServerMessageCommand {
+        optional uint32 chatKey                      = 1;
+        optional uint32 participantKey               = 2;
+        optional string content                      = 3;
+        optional google.protobuf.Timestamp timestamp = 4;
+    }
+
+    message ServerParticipantKeyListCommand {
+        optional uint32 chatKey         = 1;
+        repeated uint32 participantKeys = 2;
+    }
+
+    optional ServerCommandId cmd        = 1;
+    optional uint32          sequenceNr = 2;
+
+    oneof content {
+        ServerChatCommand               chatCmd            = 3;
+        ServerParticipantCommand        participantCmd     = 4;
+        ServerMessageCommand            msgCmd             = 5;
+        ResponseCode                    response           = 6;
+        ServerParticipantKeyListCommand participantKeyList = 7;
+    }
+}
