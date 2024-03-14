@@ -29,6 +29,7 @@ fi
 SOURCES=$(find -name "*.cpp" -not -path "./build/*")
 HEADERS_C_STYLE=$(find -name "*.h" -not -path "./build/*")
 HEADERS_CPP_STYLE=$(find -name "*.hpp" -not -path "./build/*")
+PROTO_FILES=$(find -name "*.proto" -not -path "./build/*")
 
 # Define output files
 TMP_FILES_LIST_FILE=".tmp-clang-format-files-list"
@@ -38,7 +39,7 @@ TMP_REPORT_FILE=".tmp-clang-format-report"
 echo -n "" >${TMP_REPORT_FILE}
 echo -n "" >${TMP_FILES_LIST_FILE}
 
-for FILES in ${SOURCES} ${HEADERS_C_STYLE} ${HEADERS_CPP_STYLE}; do
+for FILES in ${SOURCES} ${HEADERS_C_STYLE} ${HEADERS_CPP_STYLE} ${PROTO_FILES}; do
   if [ -n "$FILES" ]; then
     clang-format ${RUN_MODE} -style=file $FILES >>$TMP_REPORT_FILE
     echo $FILES >>$TMP_FILES_LIST_FILE
