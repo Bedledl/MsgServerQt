@@ -5,7 +5,7 @@
 #include <QTcpSocket>
 #include <QThread>
 
-#include "communicators.h"
+#include "communicator.h"
 
 // https://doc.qt.io/qt-6/qtnetwork-fortuneclient-example.html
 
@@ -13,11 +13,13 @@ class Worker : public QObject
 {
     Q_OBJECT
 public:
-    Worker(QObject *parent) : QObject(parent){};
-    ~Worker(){};
+    explicit Worker(QObject *parent) : QObject(parent){};
+    ~Worker() override = default;
+    ;
 
 public slots:
-    virtual void process() = 0;
+    virtual void initialize() = 0;
+    virtual void sendMsgToClient(QString msg) = 0;
 signals:
     void finished();
     void error(QTcpSocket::SocketError socketError);
@@ -28,10 +30,12 @@ class TCPServerWorker : public Worker
     Q_OBJECT
 public:
     TCPServerWorker(qintptr socketDescriptor, QObject *parent);
-    QString get_name() const { return name; }
+    [[nodiscard]] QString get_name() const { return name; }
+
 public slots:
-    void process() override;
-    void readFromSocketAndAswer();
+    void initialize() override;
+    void readFromSocket();
+    void sendMsgToClient(QString msg) override;
 
 private:
     qintptr socketDescriptor;
