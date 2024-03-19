@@ -1,14 +1,16 @@
 #ifndef BB2F71AD_99F1_4905_98E2_89738BFFB13A
 #define BB2F71AD_99F1_4905_98E2_89738BFFB13A
 
-#include "connConfigurator.h"
-#include <QString>
 #include <memory>
-QT_BEGIN_NAMESPACE
-class QCommandLineParser;
-QT_END_NAMESPACE
+#include <string>
 
-void configureParser(QCommandLineParser &parser, QString configFileCmdLineOptName);
-std::unique_ptr<ConnConfigurator> createConnConfiguratorFromSettings(QCommandLineParser &parser, QString configFileCmdLineOptName);
+class QCommandLineParser;
+
+class ConnConfigurator;
+
+constexpr inline std::string configFileCmdLineOptName = "config-file";
+
+void configureParser(QCommandLineParser &parser);
+std::unique_ptr<ConnConfigurator> createConnConfiguratorFromSettings(QCommandLineParser &parser);
 
 #endif /* BB2F71AD_99F1_4905_98E2_89738BFFB13A */

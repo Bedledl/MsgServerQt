@@ -8,21 +8,21 @@
 #include <map>
 #include <variant>
 
-void configureParser(QCommandLineParser &parser, QString configFileCmdLineOptName)
+void configureParser(QCommandLineParser &parser)
 {
     parser.setApplicationDescription("Chat Program Command Line Parser");
     parser.addHelpOption();
     parser.addVersionOption();
 
-    QCommandLineOption configFileOption(QStringList() << configFileCmdLineOptName,
+    QCommandLineOption configFileOption(QStringList() << configFileCmdLineOptName.c_str(),
                                         QCoreApplication::translate("main", "Specfiy config file to configure connection with."),
                                         QCoreApplication::translate("main", "directory"));
     parser.addOption(configFileOption);
 }
 
-std::unique_ptr<ConnConfigurator> createConnConfiguratorFromSettings(QCommandLineParser &parser, QString configFileCmdLineOptName)
+std::unique_ptr<ConnConfigurator> createConnConfiguratorFromSettings(QCommandLineParser &parser)
 {
-    QString configFilePath = parser.value(configFileCmdLineOptName);
+    QString configFilePath = parser.value(configFileCmdLineOptName.c_str());
     if (configFilePath.isEmpty())
     {
         return std::make_unique<ConnConfiguratorGraphic>();

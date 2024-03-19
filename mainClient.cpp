@@ -13,12 +13,11 @@ int main(int argc, char *argv[])
     QApplication::setApplicationName("LaunchClient");
     QApplication::setApplicationVersion("1.0");
 
-    QString configFileCmdLineOptName = "config-file";
     QCommandLineParser parser;
-    configureParser(parser, configFileCmdLineOptName);
+    configureParser(parser);
     parser.process(app);
 
-    std::unique_ptr<ConnConfigurator> connConfigurator = createConnConfiguratorFromSettings(parser, configFileCmdLineOptName);
+    std::unique_ptr<ConnConfigurator> connConfigurator = createConnConfiguratorFromSettings(parser);
 
     // may block until conneciton configuration is retrieved
     auto [ip, port] = connConfigurator->retrieveConnectionConfiguration();
