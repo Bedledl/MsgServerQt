@@ -23,6 +23,7 @@ int main(int argc, char *argv[])
     parser.process(app);
 
     std::unique_ptr<ConnConfigurator> connConfigurator = createConnConfiguratorFromSettings(parser);
+    bool usePingCommunicator = parsePingConfig(parser);
 
     // may block until conneciton configuration is retrieved
     auto [ip, port] = connConfigurator->retrieveConnectionConfiguration();
