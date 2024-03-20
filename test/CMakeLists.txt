@@ -8,7 +8,7 @@ target_include_directories(testUtils PUBLIC utils/include)
 target_link_libraries(testUtils Qt6::Core Communication common)
 
 add_executable(testClient client/testClientMessageBuilder.cpp client/testRawMessageProcessor.cpp)
-add_executable(testServer server/testServerMessageBuilder.cpp)
+add_executable(testServer server/testRawMessageProcessor.cpp server/testServerMessageBuilder.cpp)
 
 target_include_directories(testClient PRIVATE client)
 target_include_directories(testServer PRIVATE server)
