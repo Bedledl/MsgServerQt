@@ -1,22 +1,23 @@
 #include "clientThreadWorker.h"
-#include "communicators.h"
+#include "communicator.h"
 #include "moc_clientThreadWorker.cpp"
 #include <iostream>
 
 #include <unistd.h>
 
 TCPServerWorker::TCPServerWorker(qintptr socketDescriptor, QObject *parent)
-    : Worker(parent), socketDescriptor(socketDescriptor)
+    : Worker(parent), socketDescriptor(socketDescriptor), tcpSocket(new QTcpSocket(this))
 {
-    tcpSocket = new QTcpSocket(this);
+
     in.setVersion(QDataStream::Qt_6_6);
     out.setVersion(QDataStream::Qt_6_6);
-    connect(tcpSocket, &QTcpSocket::readyRead, this, &TCPServerWorker::readFromSocketAndAswer);
+    connect(tcpSocket, &QTcpSocket::readyRead, this, &TCPServerWorker::readFromSocket);
 }
 
-void TCPServerWorker::process()
+void TCPServerWorker::initialize()
 {
-    communicator = std::make_unique<PingPongCommunicator>();
+    communicator = std::make_unique<PingPongCommunicator>([](const std::string &)
+                                                          { qDebug() << "dummy function"; });
 
     if (!tcpSocket->setSocketDescriptor(socketDescriptor))
     {
@@ -25,14 +26,9 @@ void TCPServerWorker::process()
         return;
     }
     in.setDevice(tcpSocket);
-
-    out << communicator->welcomeMessage();
-    tcpSocket->write(block);
-
-    // sleep(20); why does this sleep client too?
 }
 
-void TCPServerWorker::readFromSocketAndAswer()
+void TCPServerWorker::readFromSocket()
 {
     in.startTransaction();
     if (!in.commitTransaction())
@@ -42,9 +38,11 @@ void TCPServerWorker::readFromSocketAndAswer()
     }
     QString msg;
     in >> msg;
+    communicator->processRawMessage(msg);
+}
 
-    auto answer = communicator->answerMessage(msg);
-
-    out << answer;
+void TCPServerWorker::sendMsgToClient(QString msg)
+{
+    out << msg;
     tcpSocket->write(block);
 }

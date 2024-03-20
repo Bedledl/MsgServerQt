@@ -1,5 +1,3 @@
-set(AUTOMOC ON) # wsl unnötig
-set(CMAKE_AUTOMOC ON)
 
 find_package(libconfig REQUIRED)
 

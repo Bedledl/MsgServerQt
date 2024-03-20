@@ -8,7 +8,7 @@ class Recipe(ConanFile):
     def requirements(self):
         self.requires("qt/6.6.2")
         self.requires("libconfig/1.7.2")
-
+        self.requires("protobuf/3.21.12")
 
     def build_requirements(self):
         self.tool_requires("cmake/3.22.6")

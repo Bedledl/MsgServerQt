@@ -1,0 +1,7 @@
+syntax = "proto3";
+
+enum ResponseCode {
+    SUCCESS           = 0;
+    ERROR             = 1;
+    MALFORMED_MESSAGE = 2;
+}

@@ -1,5 +1,3 @@
-set(AUTOMOC ON) # wsl unnötig
-set(CMAKE_AUTOMOC ON)
 
 add_library(Server STATIC
 ${CMAKE_CURRENT_SOURCE_DIR}/clientThreadWorker.cpp

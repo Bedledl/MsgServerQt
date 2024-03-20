@@ -1,0 +1,54 @@
+syntax = "proto3";
+
+import "proto/serverClientCommunication.proto";
+import "google/protobuf/timestamp.proto";
+
+enum ClientCommandId {
+    SetNickname              = 0;
+    NewChat                  = 1;
+    ClientMessageCommand     = 2;
+    ClientChatCommand        = 3;
+    ClientParticipantCommand = 4;
+    ClientGenericResponse    = 5;
+}
+
+enum ClientChatCommandId {
+    GetParticipantKeys = 0;
+    LeaveChat          = 1;
+}
+
+enum ClientParticipantCommandId {
+    GetName      = 0;
+    GetEntryDate = 1;
+    AddToChat    = 2;
+}
+
+message ClientCommand {
+    message ClientChatCommand {
+        optional uint32              chatKey = 1;
+        optional ClientChatCommandId cmd     = 2;
+    }
+
+    message ClientParticipantCommand {
+        optional uint32                     participantKey = 1;
+        optional ClientParticipantCommandId cmd            = 2;
+        optional uint32                     chatKey        = 3;
+    }
+
+    message ClientMessageCommand {
+        optional uint32 chatKey                      = 1;
+        optional string content                      = 2;
+        optional google.protobuf.Timestamp timestamp = 3;
+    }
+
+    optional ClientCommandId cmd        = 1;
+    optional uint32          sequenceNr = 2;
+
+    oneof content {
+        ClientMessageCommand     msgCmd         = 3;
+        ClientChatCommand        chatCmd        = 4;
+        ClientParticipantCommand participantCmd = 5;
+        ResponseCode             response       = 6;
+        string                   name           = 7;
+    }
+}

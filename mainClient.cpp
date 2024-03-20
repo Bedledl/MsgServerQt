@@ -4,7 +4,6 @@
 #include <QCommandLineParser>
 
 #include "client.h"
-#include "clientApp.h"
 
 int main(int argc, char *argv[])
 {
@@ -24,19 +23,15 @@ int main(int argc, char *argv[])
     // may block until conneciton configuration is retrieved
     auto [ip, port] = connConfigurator->retrieveConnectionConfiguration();
 
-    std::unique_ptr<ClientApp> clientApp;
-
     try
     {
-        clientApp = std::make_unique<ClientApp>(std::make_unique<Client>(QHostAddress(ip), port));
+        std::make_unique<Client>(QHostAddress(ip), port, QString("Juliet"), false, app.parent());
     }
     catch (ClientFailedToConnect &exc)
     {
         // config.displayError(exc);
         return EXIT_FAILURE;
     }
-
-    clientApp->show();
 
     return app.exec();
 }

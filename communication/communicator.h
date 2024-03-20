@@ -7,31 +7,38 @@
 class Communicator
 {
 public:
-    virtual QString answerMessage(QString msg) = 0;
-    /// @brief Message that is sent from the Server to start communication after succesfully connecting to client.
-    /// @return
-    virtual QString welcomeMessage() = 0;
+    Communicator(std::function<void(std::string)> sendFunc) : sendFunc(sendFunc) {}
+    virtual void processRawMessage(std::string msg) = 0;
+    void processRawMessage(const QString &msg)
+    {
+        processRawMessage(msg.toStdString());
+    }
+    void send(std::string msg)
+    {
+        sendFunc(std::move(msg));
+    }
+
+private:
+    std::function<void(std::string)> sendFunc;
 };
 
 class PingPongCommunicator : public Communicator
 {
 public:
-    QString answerMessage(QString msg) override
+    explicit PingPongCommunicator(std::function<void(std::string)> sendAnswer) : Communicator(std::move(sendAnswer)) {}
+    void processRawMessage(std::string msg) override
     {
         if (msg == "Ping")
         {
-            return "Pong";
+            send("Pong");
+            return;
         }
-        else if (msg == "Pong")
+        if (msg == "Pong")
         {
-            return "Ping";
+            send("Ping");
+            return;
         }
-        return "Don't you want to play Ping-Pong?";
-    }
-
-    QString welcomeMessage() override
-    {
-        return QString("Ping");
+        send("Don't you want to play Ping-Pong?");
     }
 };
 
