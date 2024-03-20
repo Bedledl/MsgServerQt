@@ -54,28 +54,28 @@ public:
      *
      * @return The participant's key.
      */
-    [[nodiscard]] ParticipantKey getKey() const { return key; }
+    [[nodiscard]] virtual ParticipantKey getKey() const { return key; }
 
     /**
      * @brief Returns the participant's nickname.
      *
      * @return The participant's nickname.
      */
-    [[nodiscard]] QString getNickname() const { return name; }
+    [[nodiscard]] virtual QString getNickname() const { return name; }
 
     /**
      * @brief Returns the participant's entry date.
      *
      * @return The participant's entry date.
      */
-    [[nodiscard]] QDateTime getEntryDate() const { return registeredSince; }
+    [[nodiscard]] virtual QDateTime getEntryDate() const { return registeredSince; }
 
     /**
      * @brief Sets the participant's name.
      *
      * @param newName The new name for the participant.
      */
-    void setNickname(QString newName) { name = std::move(newName); }
+    virtual void setNickname(QString newName) { name = std::move(newName); }
 
     /**
      * @brief Sets the participant's entry date.
@@ -85,7 +85,7 @@ public:
      *
      * @param entryDate The new entry date for the participant.
      */
-    void setEntryDate(QDateTime entryDate)
+    virtual void setEntryDate(QDateTime entryDate)
     {
         registeredSince = std::move(entryDate);
     }
