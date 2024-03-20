@@ -4,7 +4,7 @@ find_package(GMock CONFIG REQUIRED)
 include(GoogleTest)
 
 add_executable(testClient client/testClientMessageBuilder.cpp client/testRawMessageProcessor.cpp utils/buildClientCmd.cpp utils/buildServerCmd.cpp)
-add_executable(testServer utils/buildClientCmd.cpp utils/buildServerCmd.cpp)
+add_executable(testServer server/testServerMessageBuilder.cpp)
 
 target_include_directories(testClient PRIVATE client)
 target_include_directories(testServer PRIVATE server)
