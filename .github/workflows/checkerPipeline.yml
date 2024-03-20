@@ -146,3 +146,13 @@ jobs:
         extensions: 'c,h,C,H,cpp,hpp,cc,hh,c++,h++,cxx,hxx'
         useexistingbuild: true
       continue-on-error: true
+
+    - name: Build and test this project
+      run: ctest --preset conan-${{ env.BUILD_TYPE_LC }}
+
+    - name: Generate a code coverage report
+      uses: threeal/gcovr-action@v1.0.0
+      with:
+        xml-out: coverage.xml
+        excludes: |
+          build/*
