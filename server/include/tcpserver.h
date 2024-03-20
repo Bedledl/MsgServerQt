@@ -4,17 +4,23 @@
 #include <QObject>
 #include <QTcpServer>
 
-#include "server.h"
+class Server;
+class Worker;
 
-class TCPMessageServer : public QTcpServer, public Server
+class TCPMessageServer : public QTcpServer
 {
     Q_OBJECT
 public:
-    TCPMessageServer(QHostAddress ip, quint16 port, QObject *parent = nullptr);
+    TCPMessageServer(Server &server, QHostAddress ip, quint16 port, bool usePingCommunicator, QObject *parent = nullptr);
     ~TCPMessageServer(){};
 
 protected:
+    void create_new_client_thread(Worker *worker);
+    bool usePingCommunicator;
     void incomingConnection(qintptr socketDescriptor) override;
+
+private:
+    Server &server;
 };
 
 #endif

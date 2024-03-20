@@ -1,7 +1,7 @@
 #include "chat.h"
 #include "configParser.h"
 #include "connConfigGraphic.h"
-#include "tcpserver.h"
+#include "server.h"
 #include <QApplication>
 #include <iostream>
 
@@ -27,11 +27,7 @@ int main(int argc, char *argv[])
     // may block until conneciton configuration is retrieved
     auto [ip, port] = connConfigurator->retrieveConnectionConfiguration();
 
-    std::unique_ptr<TCPMessageServer> server = std::make_unique<TCPMessageServer>(QHostAddress(ip), port);
-    auto globalChat = server->getGlobalChat();
-
-
-
+    std::unique_ptr<Server> server = std::make_unique<Server>(QHostAddress(ip), port, usePingCommunicator, app.parent());
 
     return app.exec();
 }
