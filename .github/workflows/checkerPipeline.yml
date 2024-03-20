@@ -28,8 +28,66 @@ jobs:
       name: Print success
       run: echo "Clang format check passed"
 
-  build:
+  build-cache:
     runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Cache conan installed packages
+      id: cache-deps
+      uses: actions/cache@v3
+      env:
+        cache-name: cache-deps
+      with:
+        path: ${{github.workspace}}/${{ env.CONAN_CACHE_SAVE_FILE}}
+        key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ env.BUILD_TYPE_LC }}-${{ hashFiles('conanfile.py') }}
+        restore-keys: |
+          ${{ runner.os }}-build-${{ env.cache-name }}-${{ env.BUILD_TYPE_LC }}-
+          ${{ runner.os }}-build-${{ env.cache-name }}-
+          ${{ runner.os }}-build-
+          ${{ runner.os }}-
+
+
+    - if: ${{ steps.cache-deps.outputs.cache-hit != 'true' }}
+      name: Print loading cache unsuccessful
+      continue-on-error: true
+      run: echo "Could not restore cache"
+
+    - if: ${{ steps.cache-deps.outputs.cache-hit == 'true' }}
+      name: Print loading cache successful
+      continue-on-error: true
+      run: echo "Could restore cache"
+
+
+    - name: Install Conan
+      if: ${{ steps.cache-deps.outputs.cache-hit != 'true' }}
+      id: conan
+      uses: turtlebrowser/get-conan@main
+
+    - name: Conan version
+      if: ${{ steps.cache-deps.outputs.cache-hit != 'true' }}
+      run: echo "${{ steps.conan.outputs.version }}"
+
+    - name: Conan install Linux x86_64 default profile
+      if: ${{ steps.cache-deps.outputs.cache-hit != 'true' }}
+      run: conan config install ${{github.workspace}}/conan2-config/
+
+    - name: Print conan profiles
+      if: ${{ steps.cache-deps.outputs.cache-hit != 'true' }}
+      run: conan profile list
+
+    - name: Build dependencies
+      if: ${{ steps.cache-deps.outputs.cache-hit != 'true' }}
+      run: conan install -pr:a defaultLinux --output-folder=build --build=missing -s build_type=${{ env.BUILD_TYPE }} -c tools.system.package_manager:mode=install -c tools.system.package_manager:sudo=True .
+
+    - if: ${{ steps.cache-deps.outputs.cache-hit != 'true' }}
+      name: Build compressed conan cache to be stored by the Github action cache
+      run: conan cache save "*/*:*" --file=${{github.workspace}}/${{ env.CONAN_CACHE_SAVE_FILE}}
+
+  build-with-checks:
+    runs-on: ubuntu-latest
+    needs: build-cache
 
     steps:
     - uses: actions/checkout@v3
@@ -66,8 +124,7 @@ jobs:
 
     - if: ${{ steps.cache-deps.outputs.cache-hit != 'true' }}
       name: Print loading cache unsuccessful
-      continue-on-error: true
-      run: echo "Could not restore cache"
+      run: echo "Could not restore cache" && exit 1
 
     - if: ${{ steps.cache-deps.outputs.cache-hit == 'true' }}
       name: Print loading cache successful
