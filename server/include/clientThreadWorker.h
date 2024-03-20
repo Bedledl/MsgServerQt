@@ -1,36 +1,43 @@
-#ifndef WORKER_H
-#define WORKER_H
+#ifndef SERVER_INCLUDE_CLIENTTHREADWORKER
+#define SERVER_INCLUDE_CLIENTTHREADWORKER
 
-#include <QDataStream>
+#include <QObject>
 #include <QTcpSocket>
-#include <QThread>
 
+#include "chat.h"
+#include "clientThreadIface.h"
 #include "communicator.h"
+#include "rawClientMessageProcessor.h"
+#include "server.h"
 
-// https://doc.qt.io/qt-6/qtnetwork-fortuneclient-example.html
+class Participant;
 
-class Worker : public QObject
+class Worker : public QObject, public ClientThreadIface
 {
     Q_OBJECT
 public:
-    explicit Worker(QObject *parent) : QObject(parent){};
-    ~Worker() override = default;
-    ;
-
+    explicit Worker(ServerIface &server, bool usePingCommunicator, QObject *parent);
 public slots:
     virtual void initialize() = 0;
     virtual void sendMsgToClient(QString msg) = 0;
 signals:
     void finished();
     void error(QTcpSocket::SocketError socketError);
+
+protected:
+    std::function<void(std::string)> processRawMessages;
+
+private:
+    std::unique_ptr<ServerParticipant> participantInfo;
+    std::unique_ptr<PingPongCommunicator> pingPong;
+    std::unique_ptr<RawClientMessageProcessor> rawClientMessageProcessor;
 };
 
 class TCPServerWorker : public Worker
 {
     Q_OBJECT
 public:
-    TCPServerWorker(qintptr socketDescriptor, QObject *parent);
-    [[nodiscard]] QString get_name() const { return name; }
+    TCPServerWorker(ServerIface &server, qintptr socketDescriptor, bool usePingCommunicator, QObject *parent);
 
 public slots:
     void initialize() override;
@@ -40,10 +47,8 @@ public slots:
 private:
     qintptr socketDescriptor;
     QTcpSocket *tcpSocket;
-    QString name;
-    std::unique_ptr<Communicator> communicator;
     QDataStream in;
     QByteArray block;
     QDataStream out{&block, QIODevice::WriteOnly};
 };
-#endif
+#endif /* SERVER_INCLUDE_CLIENTTHREADWORKER */
