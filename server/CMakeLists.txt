@@ -5,6 +5,7 @@ ${CMAKE_CURRENT_SOURCE_DIR}/tcpserver.cpp
 ${CMAKE_CURRENT_SOURCE_DIR}/chat.cpp
 ${CMAKE_CURRENT_SOURCE_DIR}/server.cpp
 ${CMAKE_CURRENT_SOURCE_DIR}/serverParticipant.cpp
+${CMAKE_CURRENT_SOURCE_DIR}/rawClientMessageProcessor.cpp
 ${CMAKE_CURRENT_SOURCE_DIR}/serverMessageBuilder.cpp
 )
 
